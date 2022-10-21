@@ -63,7 +63,7 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value="19,879"
+                          value={priceInCents / 60}
                           renderPrefix={() => '$'}
                           screenWidth={screenWidth}
                         />

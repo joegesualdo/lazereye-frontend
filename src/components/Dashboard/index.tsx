@@ -44,6 +44,7 @@ function useWindowSize(): Size {
 interface DashboardProps {
   blockheight: number
   subsidyInSatsForCurrentBlock: number
+  priceInCents: number
 }
 
 const columnCount = (width: number): number => {
@@ -92,6 +93,7 @@ const LogoAndBlockHeightTransactions: React.FC<
 const Dashboard: React.FC<DashboardProps> = ({
   blockheight,
   subsidyInSatsForCurrentBlock,
+  priceInCents,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -122,7 +124,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             screenWidth={size.width}
             satsPerDollar={5248}
             marketCapInDollars={3656000}
-            priceInCents={10000}
+            priceInCents={priceInCents}
           />
           <TransactionsSection
             transactions={200000}
@@ -141,7 +143,10 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
         <div className={css({})}>
           {columnCount(size.width) == 3 ? (
-            <LogoAndBlockHeightTransactions screenWidth={size.width} />
+            <LogoAndBlockHeightTransactions
+              screenWidth={size.width}
+              blockheight={blockheight}
+            />
           ) : null}
           <DifficultySection screenWidth={size.width} />
           <MiningDataSection screenWidth={size.width} />
