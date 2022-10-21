@@ -62,6 +62,7 @@ const columnCount = (width: number): number => {
 interface LogoAndBlockHeightTransactionsProps {
   screenWidth: number
   blockheight: number
+  totalMoneySupply: number
 }
 const LogoAndBlockHeightTransactions: React.FC<
   LogoAndBlockHeightTransactionsProps
@@ -94,6 +95,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   blockheight,
   subsidyInSatsForCurrentBlock,
   priceInCents,
+  totalMoneySupply,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -123,7 +125,9 @@ const Dashboard: React.FC<DashboardProps> = ({
           <MarketDataSection
             screenWidth={size.width}
             satsPerDollar={5248}
-            marketCapInDollars={3656000}
+            marketCapInDollars={
+              ((priceInCents / 100) * totalMoneySupply) / 1000000000
+            }
             priceInCents={priceInCents}
           />
           <TransactionsSection

@@ -29,6 +29,11 @@ const fetchDifficulty = async () => {
   const difficulty = await data.json()
   return difficulty
 }
+const fetchTxOutsetInfo = async () => {
+  const data = await fetch('http://127.0.0.1:3030/api/v1/gettxoutsetinfo')
+  const txOutsetInfo = await data.json()
+  return txOutsetInfo
+}
 const fetchBlockStatsForHeight = async (height: number) => {
   console.log('about to fetch block count...')
   const data = await fetch(
@@ -54,14 +59,15 @@ const fetchChainTxStatsForLastMonth = async () => {
   return chainTxStatsForLastMonth
 }
 function App(): React.ReactElement {
-  const [price, setPrice] = useState(0)
-  const [blockHeight, setBlockHeight] = useState(0)
+  const [priceInCents, setPriceInCents] = useState(0)
+  const [blockCount, setBlockCount] = useState(0)
   const [difficulty, setDifficulty] = useState(0)
   const [networkHashPsForLast2016Blocks, setNetworkHashPsForLast2016Blocks] =
     useState(0)
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
+  const [txOutsetInfo, setTxOutsetInfo] = useState({})
   const [
     blockStatsForHeightOfLastDifficultyAdjustment,
     setBlockStatsForHeightOfLastDifficultyAdjustment,
@@ -70,30 +76,30 @@ function App(): React.ReactElement {
   useEffect(() => {
     const fetchData = async () => {
       const jsonData = await fetchDashboard()
-      setPrice(jsonData.price)
+      setPriceInCents(jsonData.price * 100)
       // setBlockHeight(jsonData.block_count)
       //
-      const blockcount = await fetchBC()
+      const blockCount = await fetchBC()
       // setPrice(jsonData.price)
-      setBlockHeight(blockcount)
+      setBlockCount(blockCount)
 
       const difficulty = await fetchDifficulty()
       // setPrice(jsonData.price)
       setDifficulty(difficulty)
 
       const blockStatsForCurrentHeight = await fetchBlockStatsForHeight(
-        blockcount
+        blockCount
       )
       setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
       const networkHashPsForLast2016Blocks =
         await fetchNetworkHashPsForLastBlocks(2016)
       setNetworkHashPsForLast2016Blocks(networkHashPsForLast2016Blocks)
+
       const BLOCKS_PER_DIFFICULTY_PERIOD = 2016
       const current_difficulty_epoch =
-        blockcount / BLOCKS_PER_DIFFICULTY_PERIOD + 1
+        blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1
       const block_height_of_last_difficulty_adjustment =
         (current_difficulty_epoch - 1) * 2016
-
       const blockStatsForHeightOfLastDifficultyAdjustment =
         await fetchBlockStatsForHeight(
           block_height_of_last_difficulty_adjustment
@@ -104,21 +110,23 @@ function App(): React.ReactElement {
 
       const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
       setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
+      const txOutsetInfo = await fetchTxOutsetInfo()
+      setTxOutsetInfo(txOutsetInfo)
     }
     fetchData().catch(console.error)
   }, [])
-  const onClickUpdate = () => {
-    const fetchMainData = async () => {
-      const jsonData = await fetchData()
-      setPrice(jsonData.price)
-      return jsonData
-    }
-    fetchMainData().catch(console.error)
-  }
+  // console.log('------')
+  // console.log(`price: ${priceInCents}`)
+  // console.log(`blockCount: ${blockCount}`)
+  // console.log(`totalMoneySupply: ${txOutsetInfo.total_amount}`)
+  // console.log('------')
+
   return (
     <Dashboard
-      blockheight={blockHeight}
+      priceInCents={priceInCents}
+      blockheight={blockCount}
       subsidyInSatsForCurrentBlock={blockStatsForCurrentHeight.subsidy}
+      totalMoneySupply={txOutsetInfo.total_amount}
     />
   )
 }
