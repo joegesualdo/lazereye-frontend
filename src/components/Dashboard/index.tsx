@@ -45,6 +45,16 @@ interface DashboardProps {
   blockheight: number
   subsidyInSatsForCurrentBlock: number
   priceInCents: number
+  totalMoneySupply: number
+  timeOfLastBlock: number
+  totalTransactionsCount: number
+  transactionsCountLast30Days: number
+  tps30Day: number
+  difficulty: number
+  currentDifficultyEpoch: number
+  blocksUntilRetarget: number
+  estimatedSecondsUntilRetarget: number
+  estimatedHashRateForLast2016Blocks: number
 }
 
 const columnCount = (width: number): number => {
@@ -63,10 +73,16 @@ interface LogoAndBlockHeightTransactionsProps {
   screenWidth: number
   blockheight: number
   totalMoneySupply: number
+  totalTransactionsCount: number
 }
+
 const LogoAndBlockHeightTransactions: React.FC<
   LogoAndBlockHeightTransactionsProps
-> = ({ screenWidth, blockheight }: LogoAndBlockHeightTransactionsProps) => (
+> = ({
+  screenWidth,
+  blockheight,
+  totalTransactionsCount,
+}: LogoAndBlockHeightTransactionsProps) => (
   <div>
     <div
       className={css({
@@ -85,7 +101,7 @@ const LogoAndBlockHeightTransactions: React.FC<
       <BlockheightTransactionsCard
         screenWidth={screenWidth}
         blockheight={blockheight}
-        transactionsCount={'734.54'}
+        transactionsCount={totalTransactionsCount}
       />
     </div>
   </div>
@@ -96,6 +112,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   subsidyInSatsForCurrentBlock,
   priceInCents,
   totalMoneySupply,
+  timeOfLastBlock,
+  totalTransactionsCount,
+  transactionsCountLast30Days,
+  tps30Day,
+  difficulty,
+  currentDifficultyEpoch,
+  blocksUntilRetarget,
+  estimatedSecondsUntilRetarget,
+  estimatedHashRateForLast2016Blocks,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -120,6 +145,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <LogoAndBlockHeightTransactions
               screenWidth={size.width}
               blockheight={blockheight}
+              totalTransactionsCount={totalTransactionsCount}
             />
           ) : null}
           <MarketDataSection
@@ -131,12 +157,15 @@ const Dashboard: React.FC<DashboardProps> = ({
             priceInCents={priceInCents}
           />
           <TransactionsSection
-            transactions={200000}
-            tps30Day={3}
+            transactionsCountLast30Days={transactionsCountLast30Days}
+            tps30Day={tps30Day}
             screenWidth={size.width}
           />
           {columnCount(size.width) == 3 || columnCount(size.width) == 1 ? (
-            <BlockchainSection screenWidth={size.width} />
+            <BlockchainSection
+              screenWidth={size.width}
+              timeOfLastBlock={timeOfLastBlock}
+            />
           ) : null}
           {columnCount(size.width) == 2 ? (
             <MiningEconomicsSection
@@ -150,12 +179,27 @@ const Dashboard: React.FC<DashboardProps> = ({
             <LogoAndBlockHeightTransactions
               screenWidth={size.width}
               blockheight={blockheight}
+              totalTransactionsCount={totalTransactionsCount}
             />
           ) : null}
-          <DifficultySection screenWidth={size.width} />
-          <MiningDataSection screenWidth={size.width} />
+          <DifficultySection
+            screenWidth={size.width}
+            difficulty={difficulty}
+            currentDifficultyEpoch={currentDifficultyEpoch}
+            blocksUntilRetarget={blocksUntilRetarget}
+            estimatedSecondsUntilRetarget={estimatedSecondsUntilRetarget}
+          />
+          <MiningDataSection
+            screenWidth={size.width}
+            estimatedHashRateForLast2016Blocks={
+              estimatedHashRateForLast2016Blocks
+            }
+          />
           {columnCount(size.width) == 2 ? (
-            <BlockchainSection screenWidth={size.width} />
+            <BlockchainSection
+              screenWidth={size.width}
+              timeOfLastBlock={timeOfLastBlock}
+            />
           ) : null}
         </div>
         {columnCount(size.width) == 3 || columnCount(size.width) == 1 ? (

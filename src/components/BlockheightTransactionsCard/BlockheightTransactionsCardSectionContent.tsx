@@ -36,7 +36,10 @@ const BlockheightTransactionsCardSectionContent: React.FC<
             }}
           >
             <CardSectionTitle title="Blockheight" screenWidth={screenWidth} />
-            <CardSectionValue value={blockheight} screenWidth={screenWidth} />
+            <CardSectionValue
+              value={new Intl.NumberFormat().format(blockheight)}
+              screenWidth={screenWidth}
+            />
           </div>
         )}
       />
@@ -57,7 +60,9 @@ const BlockheightTransactionsCardSectionContent: React.FC<
           >
             <CardSectionTitle title="Transactions" screenWidth={screenWidth} />
             <CardSectionValue
-              value={transactionsCount}
+              value={new Intl.NumberFormat('en-IN', {
+                maximumSignificantDigits: 5,
+              }).format(transactionsCount / 1_000_000)}
               postfix="mm"
               screenWidth={screenWidth}
             />

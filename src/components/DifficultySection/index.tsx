@@ -13,17 +13,31 @@ interface DifficultySectionProps {
   difficulty: number
   blocksUntilRetarget: number
   currentEpoch: number
-  daysUntilNextRetarget: number
-  dateOfNextRetarget: string
+  estimatedSecondsUntilRetarget: number
+
+  // daysUntilNextRetarget: number
+  // dateOfNextRetarget: string
   screenWidth: number
+}
+
+const getDateFormatForSecondsInTheFuture = (secondsInTheFuture) => {
+  var options = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }
+  const now = new Date()
+  const dateInTheFuture = new Date(now.valueOf() + secondsInTheFuture * 1000)
+  return dateInTheFuture.toLocaleDateString('en-US', options)
 }
 
 const DifficultySection: React.FC<MarketDataCardProps> = ({
   difficulty,
   blocksUntilRetarget,
-  currentEpoch,
-  daysUntilNextRetarget,
-  dateOfNextRetarget,
+  currentDifficultyEpoch,
+  estimatedSecondsUntilRetarget,
+  // daysUntilNextRetarget,
+  // dateOfNextRetarget,
   screenWidth,
 }: DifficultySectionProps) => {
   const leftSectionRef = useRef(null)
@@ -74,7 +88,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                             screenWidth={screenWidth}
                           />
                           <CardSectionValue
-                            value="35.61"
+                            value={(difficulty / 1000000000000).toFixed(2)}
                             postfix="t"
                             screenWidth={screenWidth}
                           />
@@ -129,7 +143,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value="1,285"
+                          value={blocksUntilRetarget}
                           screenWidth={screenWidth}
                         />
                       </div>
@@ -162,7 +176,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value="377"
+                          value={currentDifficultyEpoch}
                           screenWidth={screenWidth}
                         />
                       </div>
@@ -201,7 +215,10 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value="14"
+                          value={(
+                            estimatedSecondsUntilRetarget /
+                            (60 * 60 * 24)
+                          ).toFixed(0)}
                           postfix="days"
                           screenWidth={screenWidth}
                         />
@@ -235,7 +252,9 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value="10/7/22"
+                          postfix={getDateFormatForSecondsInTheFuture(
+                            estimatedSecondsUntilRetarget
+                          )}
                           screenWidth={screenWidth}
                         />
                       </div>

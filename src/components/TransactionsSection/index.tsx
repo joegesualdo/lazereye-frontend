@@ -8,12 +8,12 @@ import CardSectionValue from '../CardSectionValue'
 import Card from '../Card'
 
 interface TransactionsSectionProps {
-  transactions: number
+  transactionsCountLast30Days: number
   tps30Day: number
   screenWidth: number
 }
 const TransactionsSection: React.FC<TransactionsSectionProps> = ({
-  transactions,
+  transactionsCountLast30Days,
   tps30Day,
   screenWidth,
 }: TransactionsSectionProps) => (
@@ -57,7 +57,9 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({
                         screenWidth={screenWidth}
                       />
                       <CardSectionValue
-                        value="7,258,348"
+                        value={new Intl.NumberFormat().format(
+                          transactionsCountLast30Days
+                        )}
                         screenWidth={screenWidth}
                       />
                     </div>
@@ -90,7 +92,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({
                         screenWidth={screenWidth}
                       />
                       <CardSectionValue
-                        value="3"
+                        value={tps30Day.toFixed(2)}
                         postfix="tx/s"
                         screenWidth={screenWidth}
                       />

@@ -14,9 +14,10 @@ interface MiningDataSectionProps {
   hashrate: number
   blocksMinedLast24Hours: number
   screenWidth: number
+  estimatedHashRateForLast2016Blocks: number
 }
 const MiningDataSection: React.FC<MiningDataSectionProps> = ({
-  hashrate,
+  estimatedHashRateForLast2016Blocks,
   blocksMinedLast24Hours,
   screenWidth,
 }: MiningDataSectionProps) => {
@@ -69,7 +70,10 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                             screenWidth={screenWidth}
                           />
                           <CardSectionValue
-                            value="262.3"
+                            value={(
+                              estimatedHashRateForLast2016Blocks /
+                              1_000_000_000_000_000_000
+                            ).toFixed(2)}
                             postfix="eh/s"
                             screenWidth={screenWidth}
                           />

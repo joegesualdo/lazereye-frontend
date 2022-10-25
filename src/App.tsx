@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import './App.css'
 import Dashboard from './components/Dashboard'
 
+const BLOCKS_PER_DIFFICULTY_PERIOD = 2016
 const appStyles = {
   backgroundColor: 'rgb(20 26 47/1)',
   height: '100%',
@@ -75,8 +76,8 @@ function App(): React.ReactElement {
   const [chainTxStatsForLastMonth, setChainTxStatsForLastMonth] = useState({})
   useEffect(() => {
     const fetchData = async () => {
-      const jsonData = await fetchDashboard()
-      setPriceInCents(jsonData.price * 100)
+      // const jsonData = await fetchDashboard()
+      setPriceInCents(1977800)
       // setBlockHeight(jsonData.block_count)
       //
       const blockCount = await fetchBC()
@@ -95,7 +96,6 @@ function App(): React.ReactElement {
         await fetchNetworkHashPsForLastBlocks(2016)
       setNetworkHashPsForLast2016Blocks(networkHashPsForLast2016Blocks)
 
-      const BLOCKS_PER_DIFFICULTY_PERIOD = 2016
       const current_difficulty_epoch =
         blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1
       const block_height_of_last_difficulty_adjustment =
@@ -110,6 +110,7 @@ function App(): React.ReactElement {
 
       const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
       setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
+      // TAKES A VERY LONG TIME
       const txOutsetInfo = await fetchTxOutsetInfo()
       setTxOutsetInfo(txOutsetInfo)
     }
@@ -121,12 +122,46 @@ function App(): React.ReactElement {
   // console.log(`totalMoneySupply: ${txOutsetInfo.total_amount}`)
   // console.log('------')
 
+  const timeOfLastBlock = blockStatsForCurrentHeight.time
+  const timeOfLastDifficultyAdjustmentBlock =
+    blockStatsForHeightOfLastDifficultyAdjustment.time
+  const percent_of_epoch_complete =
+    (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD) % 1.0
+  const percent_of_epoch_to_go = 1.0 - percent_of_epoch_complete
+  const blocksUntilRetarget =
+    percent_of_epoch_to_go * BLOCKS_PER_DIFFICULTY_PERIOD
+  const transactionsCountLast30Days = chainTxStatsForLastMonth.window_tx_count
   return (
     <Dashboard
       priceInCents={priceInCents}
       blockheight={blockCount}
       subsidyInSatsForCurrentBlock={blockStatsForCurrentHeight.subsidy}
       totalMoneySupply={txOutsetInfo.total_amount}
+      timeOfLastBlock={timeOfLastBlock}
+      totalTransactionsCount={chainTxStatsForLastMonth.txcount}
+      transactionsCountLast30Days={transactionsCountLast30Days}
+      tps30Day={
+        transactionsCountLast30Days / chainTxStatsForLastMonth.window_interval
+      }
+      difficulty={difficulty}
+      currentDifficultyEpoch={(
+        blockCount / BLOCKS_PER_DIFFICULTY_PERIOD +
+        1
+      ).toFixed(0)}
+      blocksUntilRetarget={(() => {
+        return Math.ceil(blocksUntilRetarget)
+      })()}
+      // averageSecondsPerBlockForCurrentEpoch={(() => {
+      //   const blocks_since_last_retarget =
+      //     BLOCKS_PER_DIFFICULTY_PERIOD - blocksUntilRetarget
+
+      //   const duration_since_last_difficulty_adjustment =
+      //     timeOfLastBlock - timeOfLastDifficultyAdjustmentBlock
+      //   const average_seconds_per_block_for_current_epoch =
+      //     duration_since_last_difficulty_adjustment / blocks_since_last_retarget
+      // })()}
+      estimatedSecondsUntilRetarget={10.0 * 60.0 * blocksUntilRetarget}
+      estimatedHashRateForLast2016Blocks={networkHashPsForLast2016Blocks}
     />
   )
 }

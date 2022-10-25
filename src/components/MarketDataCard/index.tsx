@@ -63,7 +63,9 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value={priceInCents / 100}
+                          value={new Intl.NumberFormat().format(
+                            priceInCents / 100
+                          )}
                           renderPrefix={() => '$'}
                           screenWidth={screenWidth}
                         />
@@ -154,7 +156,13 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                         screenWidth={screenWidth}
                       />
                       <CardSectionValue
-                        value="5,248"
+                        value={(() => {
+                          const satPriceInCents = priceInCents / 100_000_000
+                          const satsPerDollar = 100 / satPriceInCents
+                          return new Intl.NumberFormat({}).format(
+                            satsPerDollar.toFixed(0)
+                          )
+                        })()}
                         screenWidth={screenWidth}
                         renderPrefix={() => (
                           <i className="fak fa-satoshisymbol-solidtilt" />

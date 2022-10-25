@@ -9,15 +9,41 @@ import Card from '../Card'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
 
+const getSecondsSinceUnixTimestamp = (unixTimestamp) => {
+  console.log('unixTimestamp of last block')
+  const unixTimestampInMilliseconds = unixTimestamp * 1000
+  const blockTime = new Date(unixTimestampInMilliseconds)
+  const now = new Date()
+  console.log('now')
+  console.log(now.valueOf())
+  const msSinceLastBlock = now.valueOf() - blockTime.valueOf()
+  const secondsSinceLastBlock = msSinceLastBlock / 1000
+  const utcSecondsSinceEpoch = Math.round(secondsSinceLastBlock)
+  console.log(utcSecondsSinceEpoch)
+
+  return utcSecondsSinceEpoch
+}
+
+const getFormattedStringForSeconds = (seconds) => {
+  console.log('seconds to format')
+  console.log(seconds)
+  var date = new Date(null)
+  date.setSeconds(seconds) // specify value for SECONDS here
+  var result = date.toISOString().substr(14, 5)
+  return result
+}
+
 interface BlockchainSectionProps {
   hashrate: number
   blocksMinedLast24Hours: number
   screenWidth: number
+  timeOfLastBlock: number
 }
 const BlockchainSection: React.FC<BlockchainSectionProps> = ({
   hashrate,
   blocksMinedLast24Hours,
   screenWidth,
+  timeOfLastBlock,
 }: BlockchainSectionProps) => {
   const getSinceLastBlockFontSize = (width: number): number => {
     if (width <= 500) {
@@ -97,7 +123,15 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
                               >
                                 <div>
                                   <CardSectionValue
-                                    value="7:01"
+                                    value={
+                                      timeOfLastBlock
+                                        ? getFormattedStringForSeconds(
+                                            getSecondsSinceUnixTimestamp(
+                                              timeOfLastBlock
+                                            )
+                                          )
+                                        :"--"
+                                    }
                                     screenWidth={screenWidth}
                                   />
                                 </div>
@@ -220,7 +254,7 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
               columnsCount == 1 ? 2 : 0
             }, minmax(0, 1fr))`,
             gap: 20,
-            gridAutoRows: "min-content"
+            gridAutoRows: 'min-content',
           })}
         >
           <div className={css({})}>
