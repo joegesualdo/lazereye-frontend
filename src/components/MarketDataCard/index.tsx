@@ -69,9 +69,9 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value={new Intl.NumberFormat().format(
-                            priceInCents / 100
-                          )}
+                          value={new Intl.NumberFormat('en', {
+                            maximumFractionDigits: 0,
+                          }).format(priceInCents / 100)}
                           renderPrefix={() => '$'}
                           screenWidth={screenWidth}
                         />
@@ -98,7 +98,10 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                 //   label: '2039',
                 //   data: 20000,
                 // }))}
-                data={pricesLast24Hours.map((d) => ({ x: d.t, y: d.p }))}
+                data={pricesLast24Hours.map((d) => ({
+                  x: new Date(d.time).valueOf(),
+                  y: Number(d.price),
+                }))}
               />
             </div>
           </div>

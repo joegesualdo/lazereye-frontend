@@ -37,6 +37,7 @@ const CardSectionTitle: React.FC<CardSectionTitleProps> = ({
         textTransform: 'uppercase',
         fontWeight: 'bold',
         fontSize: fontSize,
+        lineHeight: `${fontSize + 3}px`,
         fontFamily:
           "'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'",
       }}

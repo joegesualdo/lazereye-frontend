@@ -41,36 +41,58 @@ const CardSectionValue: React.FC<CardSectionValueProps> = ({
   return (
     <div
       style={{
-        marginTop: 0,
-        height: fontSize + 10,
+        display: 'flex',
+        marginTop: 5,
+        //height: fontSize + 10,
         width: '100%',
         color: 'white',
         textTransform: 'uppercase',
         fontWeight: 'bold',
-        fontSize: fontSize,
         //fontFamily: "'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'",
         // fontFamily: "'Inter var', sans-serif",
         fontFamily: 'poppins, sans-serif',
       }}
     >
-      <span
-        className={css({
-          paddingRight: 5,
-          fontSize: fontSize - 10,
-          verticalAlign: 'text-top',
-        })}
-      >
-        {renderPrefix()}
-      </span>
-      {value}
-      <span className={css({ paddingLeft: 10, fontSize: fontSize - 5 })}>
-        {postfix}
-      </span>
+      {renderPrefix ? (
+        <div
+          className={css({
+            paddingRight: 5,
+            fontSize: fontSize - 10,
+            lineHeight: `${fontSize - 10}px`,
+            verticalAlign: 'text-top',
+            alignSelf: 'start',
+          })}
+        >
+          {renderPrefix()}
+        </div>
+      ) : null}
+      {value ? (
+        <div
+          className={css({
+            fontSize,
+            lineHeight: `${fontSize}px`,
+            paddingRight: postfix ? 10 : 0,
+          })}
+        >
+          {value}
+        </div>
+      ) : null}
+      {postfix ? (
+        <div
+          className={css({
+            fontSize: fontSize - 5,
+            lineHeight: `${fontSize - 5}px`,
+            alignSelf: 'end',
+          })}
+        >
+          {postfix}
+        </div>
+      ) : null}
     </div>
   )
 }
 const defaultProps = {
-  renderPrefix: () => {},
+  // renderPrefix: () => null,
 }
 CardSectionValue.defaultProps = defaultProps
 

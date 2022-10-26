@@ -25,6 +25,18 @@ const fetchBC = async () => {
   console.log(blockcount)
   return blockcount
 }
+const fetchPrice = async () => {
+  const data = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot')
+  const priceResponse = await data.json()
+  return priceResponse
+}
+const fetch24HourPriceHistory = async () => {
+  const data = await fetch(
+    'https://api.coinbase.com/v2/prices/BTC-USD/historic?period=day'
+  )
+  const priceHistory = await data.json()
+  return priceHistory
+}
 const fetchDifficulty = async () => {
   const data = await fetch('http://127.0.0.1:3030/api/v1/getdifficulty')
   const difficulty = await data.json()
@@ -126,7 +138,8 @@ const fetchDifficultyForAllEpochsInTheLastYear = async (
       } else {
         return null
       }
-    }).reverse()
+    })
+    .reverse()
   const a = await Promise.all(results)
   return a.filter((element) => {
     const e = element
@@ -143,9 +156,11 @@ const fetchChainTxStatsForLastMonth = async () => {
   return chainTxStatsForLastMonth
 }
 function App(): React.ReactElement {
+  const [currentTime, setCurrentTime] = useState(0)
   const [priceInCents, setPriceInCents] = useState(0)
   const [blockCount, setBlockCount] = useState(0)
   const [difficulty, setDifficulty] = useState(0)
+  const [last24HourPrices, setLast24HourPrices] = useState([])
   const [networkHashPsForLast2016Blocks, setNetworkHashPsForLast2016Blocks] =
     useState(0)
   const [
@@ -167,19 +182,17 @@ function App(): React.ReactElement {
   const [chainTxStatsForLastMonth, setChainTxStatsForLastMonth] = useState({})
   useEffect(() => {
     const fetchData = async () => {
+      const priceResponse = await fetchPrice()
+      setPriceInCents(Number(priceResponse.data.amount) * 100)
+      const last24HourPriceHistoryResult = await fetch24HourPriceHistory()
+      setLast24HourPrices(last24HourPriceHistoryResult.data.prices.reverse())
       // const jsonData = await fetchDashboard()
-      setPriceInCents(2006500)
+      // setPriceInCents(2006500)
       // setBlockHeight(jsonData.block_count)
       //
       const blockCount = await fetchBC()
       // setPrice(jsonData.price)
       setBlockCount(blockCount)
-
-      const networkHashPsForLastEachOfTheLast2016Blocks =
-        await fetchHashrateForLast2016Blocks(blockCount)
-      setNetworkHashPsForLastEachOfTheLast2016Blocks(
-        networkHashPsForLastEachOfTheLast2016Blocks
-      )
 
       const difficulty = await fetchDifficulty()
       // setPrice(jsonData.price)
@@ -189,9 +202,6 @@ function App(): React.ReactElement {
         blockCount
       )
       setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
-      const networkHashPsForLast2016Blocks =
-        await fetchNetworkHashPsForLastBlocks(2016)
-      setNetworkHashPsForLast2016Blocks(networkHashPsForLast2016Blocks)
 
       const current_difficulty_epoch =
         blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1
@@ -208,18 +218,68 @@ function App(): React.ReactElement {
         blockStatsForHeightOfLastDifficultyAdjustment
       )
 
+      const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
+      setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
+
+      const networkHashPsForLastEachOfTheLast2016Blocks =
+        await fetchHashrateForLast2016Blocks(blockCount)
+
+      setNetworkHashPsForLastEachOfTheLast2016Blocks(
+        networkHashPsForLastEachOfTheLast2016Blocks
+      )
+      const networkHashPsForLast2016Blocks =
+        await fetchNetworkHashPsForLastBlocks(2016)
+      setNetworkHashPsForLast2016Blocks(networkHashPsForLast2016Blocks)
+
       const difficultyAtEachEpochInTheLastYear =
         await fetchDifficultyForAllEpochsInTheLastYear(blockCount)
       setDifficultyAtEachEpochInTheLastYear(difficultyAtEachEpochInTheLastYear)
 
-      const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
-      setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
       // TAKES A VERY LONG TIME
-      // const txOutsetInfo = await fetchTxOutsetInfo()
-      // setTxOutsetInfo(txOutsetInfo)
+      const txOutsetInfo = await fetchTxOutsetInfo()
+      setTxOutsetInfo(txOutsetInfo)
     }
-    fetchData().catch(console.error)
-  }, [])
+    const setCurrentTimeInterval = setInterval(async () => {
+      setCurrentTime(new Date().valueOf())
+    }, 1000)
+    const setPriceInterval = setInterval(async () => {
+      const priceResponse = await fetchPrice()
+      setPriceInCents(Number(priceResponse.data.amount) * 100)
+    }, 10000)
+    const everyFiveSecondInterval = setInterval(async () => {
+      console.log(`inside interval: ${blockCount}`)
+
+      const newBlockCount = await fetchBC()
+      console.log(`new block: ${newBlockCount}; old block: ${blockCount}`)
+      if (newBlockCount !== blockCount) {
+        console.log("doesn't match")
+        fetchData().catch(console.error)
+      } else {
+        console.log('matches')
+      }
+    }, 5000)
+    fetchData()
+      .then(() => {})
+      .catch(console.error)
+    return () => {
+      clearInterval(everyFiveSecondInterval)
+      clearInterval(setPriceInterval)
+      clearInterval(setCurrentTimeInterval)
+    }
+    //
+    // setInterval(async () => {
+    //   console.log('interval!!')
+
+    //   const newBlockCount = await fetchBC()
+    //   console.log(`new block: ${newBlockCount}; old block: ${blockCount}`)
+    //   if (newBlockCount !== blockCount) {
+    //     console.log("doesn't match")
+    //     fetchData().catch(console.error)
+    //   } else {
+    //     console.log('matches')
+    //   }
+    // }, 10000)
+  }, [blockCount])
   // console.log('------')
   // console.log(`price: ${priceInCents}`)
   // console.log(`blockCount: ${blockCount}`)
@@ -238,7 +298,7 @@ function App(): React.ReactElement {
   return (
     <Dashboard
       priceInCents={priceInCents}
-      pricesLast24Hours={get24HourPrices()}
+      pricesLast24Hours={last24HourPrices}
       blockheight={blockCount}
       subsidyInSatsForCurrentBlock={blockStatsForCurrentHeight.subsidy}
       hashrateForEachOfTheLast2016BlocksWithRangeof2016={
@@ -271,6 +331,7 @@ function App(): React.ReactElement {
       estimatedSecondsUntilRetarget={10.0 * 60.0 * blocksUntilRetarget}
       estimatedHashRateForLast2016Blocks={networkHashPsForLast2016Blocks}
       difficultyAtEachEpoch={difficultyAtEachEpochInTheLastYear}
+      currentTime={currentTime}
     />
   )
 }

@@ -49,6 +49,7 @@ interface DashboardProps {
   }
   subsidyInSatsForCurrentBlock: number
   priceInCents: number
+  currentTime: number
   totalMoneySupply: number
   timeOfLastBlock: number
   totalTransactionsCount: number
@@ -140,6 +141,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   estimatedHashRateForLast2016Blocks,
   hashrateForEachOfTheLast2016BlocksWithRangeof2016,
   difficultyAtEachEpoch,
+  currentTime,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -184,6 +186,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <BlockchainSection
               screenWidth={size.width}
               timeOfLastBlock={timeOfLastBlock}
+              currentTime={currentTime}
             />
           ) : null}
           {columnCount(size.width) == 2 ? (
@@ -222,6 +225,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <BlockchainSection
               screenWidth={size.width}
               timeOfLastBlock={timeOfLastBlock}
+              currentTime={new Date().valueOf()}
             />
           ) : null}
         </div>

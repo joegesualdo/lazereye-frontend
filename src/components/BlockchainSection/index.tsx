@@ -9,14 +9,14 @@ import Card from '../Card'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
 
-const getSecondsSinceUnixTimestamp = (unixTimestamp) => {
+const getSecondsSinceUnixTimestamp = (unixTimestamp, currentTime) => {
   console.log('unixTimestamp of last block')
   const unixTimestampInMilliseconds = unixTimestamp * 1000
   const blockTime = new Date(unixTimestampInMilliseconds)
-  const now = new Date()
+  const currentDateTime = new Date(currentTime)
   console.log('now')
-  console.log(now.valueOf())
-  const msSinceLastBlock = now.valueOf() - blockTime.valueOf()
+  console.log(currentDateTime.valueOf())
+  const msSinceLastBlock = currentDateTime.valueOf() - blockTime.valueOf()
   const secondsSinceLastBlock = msSinceLastBlock / 1000
   const utcSecondsSinceEpoch = Math.round(secondsSinceLastBlock)
   console.log(utcSecondsSinceEpoch)
@@ -38,31 +38,33 @@ interface BlockchainSectionProps {
   blocksMinedLast24Hours: number
   screenWidth: number
   timeOfLastBlock: number
+  currentTime: number
 }
 const BlockchainSection: React.FC<BlockchainSectionProps> = ({
   hashrate,
   blocksMinedLast24Hours,
   screenWidth,
   timeOfLastBlock,
+  currentTime,
 }: BlockchainSectionProps) => {
   const getSinceLastBlockFontSize = (width: number): number => {
     if (width <= 500) {
       return 10
     } else if (width > 500 && width <= 600) {
-      return 13
+      return 11
     } else if (width > 600 && width <= 900) {
-      return 13
+      return 11
     } else if (width > 900 && width <= 1307) {
-      return 13
+      return 11
     } else if (width > 1307 && width <= 1562) {
-      return 13
+      return 11
     } else if (width > 1562 && width <= 1700) {
-      return 13
+      return 11
     } else if (width > 1700) {
-      return 13
+      return 11
     } else {
       // shouldn't reach
-      return 13
+      return 12
     }
   }
   const sinceLastFontSize = getSinceLastBlockFontSize(screenWidth)
@@ -119,29 +121,35 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
                               <div
                                 className={css({
                                   display: 'flex',
+                                  justifyContent: 'space-between',
                                 })}
                               >
-                                <div>
+                                <div
+                                  className={css({
+                                    width: '50%',
+                                  })}
+                                >
                                   <CardSectionValue
                                     value={
                                       timeOfLastBlock
                                         ? getFormattedStringForSeconds(
                                             getSecondsSinceUnixTimestamp(
-                                              timeOfLastBlock
+                                              timeOfLastBlock,
+                                              currentTime
                                             )
                                           )
-                                        :"--"
+                                        : '--'
                                     }
                                     screenWidth={screenWidth}
                                   />
                                 </div>
                                 <div
                                   className={css({
+                                    width: '50%',
                                     color: '#BDC4DC',
                                     fontSize: sinceLastFontSize,
                                     fontWeight: 100,
                                     fontFamily: 'poppins',
-                                    paddingLeft: 5,
                                     display: 'inline-block',
                                     alignSelf: 'flex-end',
                                   })}
