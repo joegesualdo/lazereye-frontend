@@ -65,6 +65,12 @@ interface DashboardProps {
       hashrate: number
     }
   ]
+  difficultyAtEachEpoch: [
+    {
+      height: number
+      difficulty: number
+    }
+  ]
 }
 
 const columnCount = (width: number): number => {
@@ -133,6 +139,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   estimatedSecondsUntilRetarget,
   estimatedHashRateForLast2016Blocks,
   hashrateForEachOfTheLast2016BlocksWithRangeof2016,
+  difficultyAtEachEpoch,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -200,6 +207,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             currentDifficultyEpoch={currentDifficultyEpoch}
             blocksUntilRetarget={blocksUntilRetarget}
             estimatedSecondsUntilRetarget={estimatedSecondsUntilRetarget}
+            difficultyAtEachEpoch={difficultyAtEachEpoch}
           />
           <MiningDataSection
             screenWidth={size.width}

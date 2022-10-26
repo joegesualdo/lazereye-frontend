@@ -9,7 +9,6 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title, emoji }) => (
     style={{
       marginBottom: 20,
       width: '100%',
-      backgroundColor: '#2C2D30',
       fontFamily:
         "'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'",
     }}

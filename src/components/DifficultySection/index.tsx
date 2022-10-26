@@ -12,12 +12,18 @@ import SectionHeader from '../SectionHeader'
 interface DifficultySectionProps {
   difficulty: number
   blocksUntilRetarget: number
-  currentEpoch: number
+  currentDifficultyEpoch: number
   estimatedSecondsUntilRetarget: number
 
   // daysUntilNextRetarget: number
   // dateOfNextRetarget: string
   screenWidth: number
+  difficultyAtEachEpoch: [
+    {
+      height: number
+      difficulty: number
+    }
+  ]
 }
 
 const getDateFormatForSecondsInTheFuture = (secondsInTheFuture) => {
@@ -39,6 +45,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
   // daysUntilNextRetarget,
   // dateOfNextRetarget,
   screenWidth,
+  difficultyAtEachEpoch,
 }: DifficultySectionProps) => {
   const leftSectionRef = useRef(null)
 
@@ -110,7 +117,12 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                   height: leftSectionHeight,
                 })}
               >
-                <LazereyeChart data={Array.from('x'.repeat(15))} />
+                <LazereyeChart
+                  data={difficultyAtEachEpoch.map((d) => ({
+                    x: d.height,
+                    y: d.difficulty,
+                  }))}
+                />
               </div>
             </div>
             <div
@@ -143,7 +155,9 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value={blocksUntilRetarget}
+                          value={new Intl.NumberFormat().format(
+                            blocksUntilRetarget
+                          )}
                           screenWidth={screenWidth}
                         />
                       </div>
@@ -176,7 +190,9 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           screenWidth={screenWidth}
                         />
                         <CardSectionValue
-                          value={currentDifficultyEpoch}
+                          value={new Intl.NumberFormat().format(
+                            currentDifficultyEpoch
+                          )}
                           screenWidth={screenWidth}
                         />
                       </div>

@@ -58,10 +58,26 @@ const fetchNetworkHashPsForLast2016BlocksAtHeight = async (height: number) => {
   const networkHashPs = await data.json()
   return networkHashPs
 }
+const fetchBlockHashForHeight = async (height: number) => {
+  const data = await fetch(
+    `http://127.0.0.1:3030/api/v1/getblockhash?height=${height}`
+  )
+  const blockhash = await data.json()
+  return blockhash
+}
+
+const fetchBlockForBlockHash = async (blockhash: string) => {
+  const data = await fetch(
+    `http://127.0.0.1:3030/api/v1/getblock?blockhash=${blockhash}&verbosity=1`
+  )
+  const blockData = await data.json()
+  return blockData
+}
 
 const fetchHashrateForLast2016Blocks = async (currentHeight: number) => {
   // approximately 1 year
-  const results = Array(360)
+  //const results = Array(360)
+  const results = Array(100)
     .fill(0)
     .map((_, i) => i)
     .map(async (i) => {
@@ -76,6 +92,47 @@ const fetchHashrateForLast2016Blocks = async (currentHeight: number) => {
     })
     .reverse()
   return await Promise.all(results)
+}
+
+const fetchDifficultyForAllEpochsInTheLastYear = async (
+  heightOfLastDifficultyAdjustment: number
+) => {
+  const oneYearAgo = new Date(
+    new Date().setFullYear(new Date().getFullYear() - 1)
+  )
+  // approximately 1 year
+  var finished = false
+  const results = Array(Math.floor(heightOfLastDifficultyAdjustment / 2016))
+    .fill(0)
+    .map((_, i) => i)
+    .map(async (i) => {
+      if (!finished) {
+        const forHeight = heightOfLastDifficultyAdjustment - i * 2016
+        const blockhash = await fetchBlockHashForHeight(forHeight)
+        const block = await fetchBlockForBlockHash(blockhash)
+        const blockDifficulty = block.difficulty
+        const blockTime = new Date(block.time * 1000)
+        if (blockTime < oneYearAgo) {
+          finished = true
+          return null
+        } else {
+          console.log(`Difficulty for block ${forHeight}: ${blockDifficulty}`)
+          const difficultyAtHeight = {
+            height: forHeight,
+            difficulty: blockDifficulty,
+          }
+          return difficultyAtHeight
+        }
+      } else {
+        return null
+      }
+    }).reverse()
+  const a = await Promise.all(results)
+  return a.filter((element) => {
+    const e = element
+    const isNull = e == null
+    return !isNull
+  })
 }
 
 const fetchChainTxStatsForLastMonth = async () => {
@@ -95,6 +152,10 @@ function App(): React.ReactElement {
     networkHashPsForLastEachOfTheLast2016Blocks,
     setNetworkHashPsForLastEachOfTheLast2016Blocks,
   ] = useState([])
+  const [
+    difficultyAtEachEpochInTheLastYear,
+    setDifficultyAtEachEpochInTheLastYear,
+  ] = useState([])
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
@@ -113,6 +174,7 @@ function App(): React.ReactElement {
       const blockCount = await fetchBC()
       // setPrice(jsonData.price)
       setBlockCount(blockCount)
+
       const networkHashPsForLastEachOfTheLast2016Blocks =
         await fetchHashrateForLast2016Blocks(blockCount)
       setNetworkHashPsForLastEachOfTheLast2016Blocks(
@@ -135,6 +197,9 @@ function App(): React.ReactElement {
         blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1
       const block_height_of_last_difficulty_adjustment =
         (current_difficulty_epoch - 1) * 2016
+      console.log(
+        `blockheight of last diff: ${block_height_of_last_difficulty_adjustment}`
+      )
       const blockStatsForHeightOfLastDifficultyAdjustment =
         await fetchBlockStatsForHeight(
           block_height_of_last_difficulty_adjustment
@@ -142,6 +207,10 @@ function App(): React.ReactElement {
       setBlockStatsForHeightOfLastDifficultyAdjustment(
         blockStatsForHeightOfLastDifficultyAdjustment
       )
+
+      const difficultyAtEachEpochInTheLastYear =
+        await fetchDifficultyForAllEpochsInTheLastYear(blockCount)
+      setDifficultyAtEachEpochInTheLastYear(difficultyAtEachEpochInTheLastYear)
 
       const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
       setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
@@ -201,6 +270,7 @@ function App(): React.ReactElement {
       // })()}
       estimatedSecondsUntilRetarget={10.0 * 60.0 * blocksUntilRetarget}
       estimatedHashRateForLast2016Blocks={networkHashPsForLast2016Blocks}
+      difficultyAtEachEpoch={difficultyAtEachEpochInTheLastYear}
     />
   )
 }
