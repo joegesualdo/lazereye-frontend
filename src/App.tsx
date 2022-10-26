@@ -11,15 +11,17 @@ const appStyles = {
   paddingRight: 20,
 }
 
+const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
+
 const fetchDashboard = async () => {
-  const data = await fetch('http://127.0.0.1:3030/api/v1/dashboard')
+  const data = await fetch('/api/v1/dashboard')
   const json = await data.json()
   console.log(json)
   return json
 }
 const fetchBC = async () => {
   console.log('about to fetch block count...')
-  const data = await fetch('http://127.0.0.1:3030/api/v1/getblockcount')
+  const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockcount`)
   console.log('blockcount: ')
   const blockcount = await data.json()
   console.log(blockcount)
@@ -38,19 +40,19 @@ const fetch24HourPriceHistory = async () => {
   return priceHistory
 }
 const fetchDifficulty = async () => {
-  const data = await fetch('http://127.0.0.1:3030/api/v1/getdifficulty')
+  const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getdifficulty`)
   const difficulty = await data.json()
   return difficulty
 }
 const fetchTxOutsetInfo = async () => {
-  const data = await fetch('http://127.0.0.1:3030/api/v1/gettxoutsetinfo')
+  const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/gettxoutsetinfo`)
   const txOutsetInfo = await data.json()
   return txOutsetInfo
 }
 const fetchBlockStatsForHeight = async (height: number) => {
   console.log('about to fetch block count...')
   const data = await fetch(
-    `http://127.0.0.1:3030/api/v1/getblockstats?hash_or_height=${height}`
+    `${BITCOIND_REST_API_URL}/api/v1/getblockstats?hash_or_height=${height}`
   )
   const blockstats = await data.json()
   console.log(blockstats)
@@ -58,21 +60,21 @@ const fetchBlockStatsForHeight = async (height: number) => {
 }
 const fetchNetworkHashPsForLastBlocks = async (blockCount: number) => {
   const data = await fetch(
-    `http://127.0.0.1:3030/api/v1/getnetworkhashps?n_blocks=${blockCount}`
+    `${BITCOIND_REST_API_URL}/api/v1/getnetworkhashps?n_blocks=${blockCount}`
   )
   const networkHashPs = await data.json()
   return networkHashPs
 }
 const fetchNetworkHashPsForLast2016BlocksAtHeight = async (height: number) => {
   const data = await fetch(
-    `http://127.0.0.1:3030/api/v1/getnetworkhashps?n_blocks=2016&height=${height}`
+    `${BITCOIND_REST_API_URL}/api/v1/getnetworkhashps?n_blocks=2016&height=${height}`
   )
   const networkHashPs = await data.json()
   return networkHashPs
 }
 const fetchBlockHashForHeight = async (height: number) => {
   const data = await fetch(
-    `http://127.0.0.1:3030/api/v1/getblockhash?height=${height}`
+    `${BITCOIND_REST_API_URL}/api/v1/getblockhash?height=${height}`
   )
   const blockhash = await data.json()
   return blockhash
@@ -80,7 +82,7 @@ const fetchBlockHashForHeight = async (height: number) => {
 
 const fetchBlockForBlockHash = async (blockhash: string) => {
   const data = await fetch(
-    `http://127.0.0.1:3030/api/v1/getblock?blockhash=${blockhash}&verbosity=1`
+    `${BITCOIND_REST_API_URL}/api/v1/getblock?blockhash=${blockhash}&verbosity=1`
   )
   const blockData = await data.json()
   return blockData
