@@ -15,11 +15,18 @@ interface MiningDataSectionProps {
   blocksMinedLast24Hours: number
   screenWidth: number
   estimatedHashRateForLast2016Blocks: number
+  hashrateForEachOfTheLast2016BlocksWithRangeof2016: [
+    {
+      height: number
+      hashrate: number
+    }
+  ]
 }
 const MiningDataSection: React.FC<MiningDataSectionProps> = ({
   estimatedHashRateForLast2016Blocks,
   blocksMinedLast24Hours,
   screenWidth,
+  hashrateForEachOfTheLast2016BlocksWithRangeof2016,
 }: MiningDataSectionProps) => {
   const leftSectionRef = useRef(null)
 
@@ -95,7 +102,11 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                   height: leftSectionHeight,
                 })}
               >
-                <LazereyeChart />
+                <LazereyeChart
+                  data={hashrateForEachOfTheLast2016BlocksWithRangeof2016.map(
+                    (d) => ({ x: d.height, y: d.hashrate })
+                  )}
+                />
               </div>
             </div>
           </div>

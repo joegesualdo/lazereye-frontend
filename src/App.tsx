@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
 import Dashboard from './components/Dashboard'
-
+import get24HourPrices from './get24HourPrices'
 const BLOCKS_PER_DIFFICULTY_PERIOD = 2016
 const appStyles = {
   backgroundColor: 'rgb(20 26 47/1)',
@@ -51,6 +51,32 @@ const fetchNetworkHashPsForLastBlocks = async (blockCount: number) => {
   const networkHashPs = await data.json()
   return networkHashPs
 }
+const fetchNetworkHashPsForLast2016BlocksAtHeight = async (height: number) => {
+  const data = await fetch(
+    `http://127.0.0.1:3030/api/v1/getnetworkhashps?n_blocks=2016&height=${height}`
+  )
+  const networkHashPs = await data.json()
+  return networkHashPs
+}
+
+const fetchHashrateForLast2016Blocks = async (currentHeight: number) => {
+  // approximately 1 year
+  const results = Array(360)
+    .fill(0)
+    .map((_, i) => i)
+    .map(async (i) => {
+      const forHeight = currentHeight - i * 144
+      const networkHashPsForLast2016Blocks =
+        await fetchNetworkHashPsForLast2016BlocksAtHeight(forHeight)
+      const hashRateAtHeight = {
+        height: forHeight,
+        hashrate: networkHashPsForLast2016Blocks,
+      }
+      return hashRateAtHeight
+    })
+    .reverse()
+  return await Promise.all(results)
+}
 
 const fetchChainTxStatsForLastMonth = async () => {
   console.log('about to fetch block count...')
@@ -65,6 +91,10 @@ function App(): React.ReactElement {
   const [difficulty, setDifficulty] = useState(0)
   const [networkHashPsForLast2016Blocks, setNetworkHashPsForLast2016Blocks] =
     useState(0)
+  const [
+    networkHashPsForLastEachOfTheLast2016Blocks,
+    setNetworkHashPsForLastEachOfTheLast2016Blocks,
+  ] = useState([])
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
@@ -77,12 +107,17 @@ function App(): React.ReactElement {
   useEffect(() => {
     const fetchData = async () => {
       // const jsonData = await fetchDashboard()
-      setPriceInCents(1977800)
+      setPriceInCents(2006500)
       // setBlockHeight(jsonData.block_count)
       //
       const blockCount = await fetchBC()
       // setPrice(jsonData.price)
       setBlockCount(blockCount)
+      const networkHashPsForLastEachOfTheLast2016Blocks =
+        await fetchHashrateForLast2016Blocks(blockCount)
+      setNetworkHashPsForLastEachOfTheLast2016Blocks(
+        networkHashPsForLastEachOfTheLast2016Blocks
+      )
 
       const difficulty = await fetchDifficulty()
       // setPrice(jsonData.price)
@@ -111,8 +146,8 @@ function App(): React.ReactElement {
       const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
       setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
       // TAKES A VERY LONG TIME
-      const txOutsetInfo = await fetchTxOutsetInfo()
-      setTxOutsetInfo(txOutsetInfo)
+      // const txOutsetInfo = await fetchTxOutsetInfo()
+      // setTxOutsetInfo(txOutsetInfo)
     }
     fetchData().catch(console.error)
   }, [])
@@ -134,8 +169,12 @@ function App(): React.ReactElement {
   return (
     <Dashboard
       priceInCents={priceInCents}
+      pricesLast24Hours={get24HourPrices()}
       blockheight={blockCount}
       subsidyInSatsForCurrentBlock={blockStatsForCurrentHeight.subsidy}
+      hashrateForEachOfTheLast2016BlocksWithRangeof2016={
+        networkHashPsForLastEachOfTheLast2016Blocks
+      }
       totalMoneySupply={txOutsetInfo.total_amount}
       timeOfLastBlock={timeOfLastBlock}
       totalTransactionsCount={chainTxStatsForLastMonth.txcount}
@@ -149,7 +188,7 @@ function App(): React.ReactElement {
         1
       ).toFixed(0)}
       blocksUntilRetarget={(() => {
-        return Math.ceil(blocksUntilRetarget)
+        return Math.floor(blocksUntilRetarget)
       })()}
       // averageSecondsPerBlockForCurrentEpoch={(() => {
       //   const blocks_since_last_retarget =

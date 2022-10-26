@@ -43,6 +43,10 @@ function useWindowSize(): Size {
 }
 interface DashboardProps {
   blockheight: number
+  pricesLast24Hours: {
+    t: number
+    p: number
+  }
   subsidyInSatsForCurrentBlock: number
   priceInCents: number
   totalMoneySupply: number
@@ -55,6 +59,12 @@ interface DashboardProps {
   blocksUntilRetarget: number
   estimatedSecondsUntilRetarget: number
   estimatedHashRateForLast2016Blocks: number
+  hashrateForEachOfTheLast2016BlocksWithRangeof2016: [
+    {
+      height: number
+      hashrate: number
+    }
+  ]
 }
 
 const columnCount = (width: number): number => {
@@ -109,6 +119,7 @@ const LogoAndBlockHeightTransactions: React.FC<
 
 const Dashboard: React.FC<DashboardProps> = ({
   blockheight,
+  pricesLast24Hours,
   subsidyInSatsForCurrentBlock,
   priceInCents,
   totalMoneySupply,
@@ -121,6 +132,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   blocksUntilRetarget,
   estimatedSecondsUntilRetarget,
   estimatedHashRateForLast2016Blocks,
+  hashrateForEachOfTheLast2016BlocksWithRangeof2016,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -150,7 +162,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           ) : null}
           <MarketDataSection
             screenWidth={size.width}
-            satsPerDollar={5248}
+            pricesLast24Hours={pricesLast24Hours}
             marketCapInDollars={
               ((priceInCents / 100) * totalMoneySupply) / 1000000000
             }
@@ -193,6 +205,9 @@ const Dashboard: React.FC<DashboardProps> = ({
             screenWidth={size.width}
             estimatedHashRateForLast2016Blocks={
               estimatedHashRateForLast2016Blocks
+            }
+            hashrateForEachOfTheLast2016BlocksWithRangeof2016={
+              hashrateForEachOfTheLast2016BlocksWithRangeof2016
             }
           />
           {columnCount(size.width) == 2 ? (

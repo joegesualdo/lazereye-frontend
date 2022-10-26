@@ -110,7 +110,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                   height: leftSectionHeight,
                 })}
               >
-                <LazereyeChart />
+                <LazereyeChart data={Array.from('x'.repeat(15))} />
               </div>
             </div>
             <div

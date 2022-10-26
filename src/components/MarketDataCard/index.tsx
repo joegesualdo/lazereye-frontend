@@ -13,6 +13,10 @@ interface MarketDataCardProps {
   marketCapInDollars: number
   satsPerDollar: number
   screenWidth: number
+  pricesLast24Hours: {
+    t: number
+    p: number
+  }
 }
 
 const MarketDataCard: React.FC<MarketDataCardProps> = ({
@@ -20,13 +24,14 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
   marketCapInDollars,
   satsPerDollar,
   screenWidth,
+  pricesLast24Hours,
 }: MarketDataCardProps) => {
   const leftSectionRef = useRef(null)
 
   const [leftSectionHeight, setHeight] = useState(0)
 
   useEffect(() => {
-    setHeight(leftSectionRef.current.clientHeight)
+    setHeight(leftSectionRef.current.clientHeight * 0.9)
   })
   return (
     <Card
@@ -36,6 +41,7 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
           <div
             className={css({
               display: 'flex',
+              alignItems: 'end',
             })}
           >
             <div
@@ -83,12 +89,17 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
             <div
               className={css({
                 width: '50%',
-                paddingTop: '0.5%',
                 // This makes the graph the height of the section to the left of it
                 height: leftSectionHeight,
               })}
             >
-              <LazereyeChart />
+              <LazereyeChart
+                // data={Array.from('x'.repeat(15)).map(() => ({
+                //   label: '2039',
+                //   data: 20000,
+                // }))}
+                data={pricesLast24Hours.map((d) => ({ x: d.t, y: d.p }))}
+              />
             </div>
           </div>
           <div
