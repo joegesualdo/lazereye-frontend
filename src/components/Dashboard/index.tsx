@@ -60,6 +60,7 @@ interface DashboardProps {
   blocksUntilRetarget: number
   estimatedSecondsUntilRetarget: number
   estimatedHashRateForLast2016Blocks: number
+  isMarketCapInDollarsLoading: boolean
   hashrateForEachOfTheLast2016BlocksWithRangeof2016: [
     {
       height: number
@@ -142,6 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   hashrateForEachOfTheLast2016BlocksWithRangeof2016,
   difficultyAtEachEpoch,
   currentTime,
+  isMarketCapInDollarsLoading,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -170,6 +172,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             />
           ) : null}
           <MarketDataSection
+            isMarketCapInDollarsLoading={isMarketCapInDollarsLoading}
             screenWidth={size.width}
             pricesLast24Hours={pricesLast24Hours}
             marketCapInDollars={

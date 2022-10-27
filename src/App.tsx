@@ -297,6 +297,7 @@ function App(): React.ReactElement {
   const blocksUntilRetarget =
     percent_of_epoch_to_go * BLOCKS_PER_DIFFICULTY_PERIOD
   const transactionsCountLast30Days = chainTxStatsForLastMonth.window_tx_count
+  const totalMoneySupply = txOutsetInfo.total_amount
   return (
     <Dashboard
       priceInCents={priceInCents}
@@ -306,7 +307,7 @@ function App(): React.ReactElement {
       hashrateForEachOfTheLast2016BlocksWithRangeof2016={
         networkHashPsForLastEachOfTheLast2016Blocks
       }
-      totalMoneySupply={txOutsetInfo.total_amount}
+      totalMoneySupply={totalMoneySupply}
       timeOfLastBlock={timeOfLastBlock}
       totalTransactionsCount={chainTxStatsForLastMonth.txcount}
       transactionsCountLast30Days={transactionsCountLast30Days}
@@ -334,6 +335,9 @@ function App(): React.ReactElement {
       estimatedHashRateForLast2016Blocks={networkHashPsForLast2016Blocks}
       difficultyAtEachEpoch={difficultyAtEachEpochInTheLastYear}
       currentTime={currentTime}
+      isMarketCapInDollarsLoading={
+        isNaN(totalMoneySupply) || isNaN(priceInCents)
+      }
     />
   )
 }

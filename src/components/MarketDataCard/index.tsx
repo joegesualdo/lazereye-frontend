@@ -8,9 +8,11 @@ import CardSectionTitle from '../CardSectionTitle'
 import CardSectionValue from '../CardSectionValue'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
+import { Bars, Oval } from 'react-loader-spinner'
 interface MarketDataCardProps {
   priceInCents: number
   marketCapInDollars: number
+  isMarketCapInDollarsLoading: boolean
   satsPerDollar: number
   screenWidth: number
   pricesLast24Hours: {
@@ -25,6 +27,7 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
   satsPerDollar,
   screenWidth,
   pricesLast24Hours,
+  isMarketCapInDollarsLoading,
 }: MarketDataCardProps) => {
   const leftSectionRef = useRef(null)
 
@@ -134,12 +137,37 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                         title="Market Cap"
                         screenWidth={screenWidth}
                       />
-                      <CardSectionValue
-                        screenWidth={screenWidth}
-                        value={marketCapInDollars.toFixed(2)}
-                        postfix="bn."
-                        renderPrefix={() => '$'}
-                      />
+
+                      {isMarketCapInDollarsLoading ? (
+                        <div
+                          className={css({
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignContent: 'center',
+                            height: 50,
+                          })}
+                        >
+                          <Bars
+                            height="20"
+                            width="20"
+                            color="rgb(255, 45, 85)"
+                            ariaLabel="bars-loading"
+                            wrapperStyle={{}}
+                            wrapperClass={css({
+                              height: 20,
+                              alignSelf: 'center',
+                            })}
+                            visible={true}
+                          />
+                        </div>
+                      ) : (
+                        <CardSectionValue
+                          screenWidth={screenWidth}
+                          value={marketCapInDollars.toFixed(2)}
+                          postfix="bn."
+                          renderPrefix={() => '$'}
+                        />
+                      )}
                     </div>
                   </div>
                 )}

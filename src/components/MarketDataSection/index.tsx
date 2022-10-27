@@ -7,6 +7,7 @@ import Logo from '../Logo'
 interface MarketDataSectionProps {
   priceInCents: number
   marketCapInDollars: number
+  isMarketCapInDollarsLoading: boolean
   screenWidth: number
   pricesLast24Hours: {
     t: number
@@ -18,6 +19,7 @@ const MarketDataSection: React.FC<MarketDataSectionProps> = ({
   marketCapInDollars,
   screenWidth,
   pricesLast24Hours,
+  isMarketCapInDollarsLoading,
 }: MarketDataSectionProps) => (
   <div
     className={css({
@@ -29,6 +31,7 @@ const MarketDataSection: React.FC<MarketDataSectionProps> = ({
       screenWidth={screenWidth}
       priceInCents={priceInCents}
       marketCapInDollars={marketCapInDollars}
+      isMarketCapInDollarsLoading={isMarketCapInDollarsLoading}
       pricesLast24Hours={pricesLast24Hours}
     />
   </div>
