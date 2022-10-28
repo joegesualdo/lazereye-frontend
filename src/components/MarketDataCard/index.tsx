@@ -96,16 +96,40 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                 height: leftSectionHeight,
               })}
             >
-              <LazereyeChart
-                // data={Array.from('x'.repeat(15)).map(() => ({
-                //   label: '2039',
-                //   data: 20000,
-                // }))}
-                data={pricesLast24Hours.map((d) => ({
-                  x: new Date(d.time).valueOf(),
-                  y: Number(d.price),
-                }))}
-              />
+              {pricesLast24Hours.length == 0 ? (
+                <div
+                  className={css({
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    height: "100%",
+                  })}
+                >
+                  <Bars
+                    height="20"
+                    width="20"
+                    color="rgb(255, 45, 85)"
+                    ariaLabel="bars-loading"
+                    wrapperStyle={{}}
+                    wrapperClass={css({
+                      height: 20,
+                      alignSelf: 'center',
+                    })}
+                    visible={true}
+                  />
+                </div>
+              ) : (
+                <LazereyeChart
+                  // data={Array.from('x'.repeat(15)).map(() => ({
+                  //   label: '2039',
+                  //   data: 20000,
+                  // }))}
+                  data={pricesLast24Hours.map((d) => ({
+                    x: new Date(d.time).valueOf(),
+                    y: Number(d.price),
+                  }))}
+                />
+              )}
             </div>
           </div>
           <div

@@ -9,6 +9,7 @@ import CardSectionValue from '../CardSectionValue'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
 import SectionHeader from '../SectionHeader'
+import { Bars } from 'react-loader-spinner'
 interface DifficultySectionProps {
   difficulty: number
   blocksUntilRetarget: number
@@ -117,12 +118,36 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                   height: leftSectionHeight,
                 })}
               >
-                <LazereyeChart
-                  data={difficultyAtEachEpoch.map((d) => ({
-                    x: d.height,
-                    y: d.difficulty,
-                  }))}
-                />
+                {difficultyAtEachEpoch.length == 0 ? (
+                  <div
+                    className={css({
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignContent: 'center',
+                      height: '100%',
+                    })}
+                  >
+                    <Bars
+                      height="20"
+                      width="20"
+                      color="rgb(255, 45, 85)"
+                      ariaLabel="bars-loading"
+                      wrapperStyle={{}}
+                      wrapperClass={css({
+                        height: 20,
+                        alignSelf: 'center',
+                      })}
+                      visible={true}
+                    />
+                  </div>
+                ) : (
+                  <LazereyeChart
+                    data={difficultyAtEachEpoch.map((d) => ({
+                      x: d.height,
+                      y: d.difficulty,
+                    }))}
+                  />
+                )}
               </div>
             </div>
             <div

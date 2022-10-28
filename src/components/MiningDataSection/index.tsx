@@ -9,6 +9,7 @@ import CardSectionValue from '../CardSectionValue'
 import Card from '../Card'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
+import { Bars } from 'react-loader-spinner'
 
 interface MiningDataSectionProps {
   hashrate: number
@@ -102,11 +103,36 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                   height: leftSectionHeight,
                 })}
               >
-                <LazereyeChart
-                  data={hashrateForEachOfTheLast2016BlocksWithRangeof2016.map(
-                    (d) => ({ x: d.height, y: d.hashrate })
-                  )}
-                />
+                {hashrateForEachOfTheLast2016BlocksWithRangeof2016.length ==
+                0 ? (
+                  <div
+                    className={css({
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignContent: 'center',
+                      height: '100%',
+                    })}
+                  >
+                    <Bars
+                      height="20"
+                      width="20"
+                      color="rgb(255, 45, 85)"
+                      ariaLabel="bars-loading"
+                      wrapperStyle={{}}
+                      wrapperClass={css({
+                        height: 20,
+                        alignSelf: 'center',
+                      })}
+                      visible={true}
+                    />
+                  </div>
+                ) : (
+                  <LazereyeChart
+                    data={hashrateForEachOfTheLast2016BlocksWithRangeof2016.map(
+                      (d) => ({ x: d.height, y: d.hashrate })
+                    )}
+                  />
+                )}
               </div>
             </div>
           </div>
