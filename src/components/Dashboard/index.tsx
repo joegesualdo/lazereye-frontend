@@ -77,6 +77,7 @@ interface DashboardProps {
   ]
   avgSecondsPerBlockForCurrentEpoch: number
   avgSecondsPerBlockForLast2016Blocks: number
+  blocksMinedOverTheLast24HoursCount: number
 }
 
 const columnCount = (width: number): number => {
@@ -152,6 +153,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   isMarketCapInDollarsLoading,
   avgSecondsPerBlockForCurrentEpoch,
   avgSecondsPerBlockForLast2016Blocks,
+  blocksMinedOverTheLast24HoursCount,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -239,6 +241,9 @@ const Dashboard: React.FC<DashboardProps> = ({
             hashrateForEachOfTheLast2016BlocksWithRangeof2016={
               hashrateForEachOfTheLast2016BlocksWithRangeof2016
             }
+            blocksMinedOverTheLast24HoursCount={
+              blocksMinedOverTheLast24HoursCount
+            }
           />
           {columnCount(size.width) == 2 ? (
             <BlockchainSection
@@ -250,7 +255,9 @@ const Dashboard: React.FC<DashboardProps> = ({
               avgSecondsPerBlockForCurrentEpoch={
                 avgSecondsPerBlockForCurrentEpoch
               }
-  avgSecondsPerBlockForLast2016Blocks={avgSecondsPerBlockForLast2016Blocks}
+              avgSecondsPerBlockForLast2016Blocks={
+                avgSecondsPerBlockForLast2016Blocks
+              }
             />
           ) : null}
         </div>

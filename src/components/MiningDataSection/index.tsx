@@ -23,12 +23,14 @@ interface MiningDataSectionProps {
       hashrate: number
     }
   ]
+  blocksMinedOverTheLast24HoursCount: number
 }
 const MiningDataSection: React.FC<MiningDataSectionProps> = ({
   estimatedHashRateForLast2016Blocks,
   blocksMinedLast24Hours,
   screenWidth,
   hashrateForEachOfTheLast2016BlocksWithRangeof2016,
+  blocksMinedOverTheLast24HoursCount,
 }: MiningDataSectionProps) => {
   const leftSectionRef = useRef(null)
 
@@ -180,10 +182,14 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                               title="Blocks Mined Last 24 Hours"
                               screenWidth={screenWidth}
                             />
+                          {!blocksMinedOverTheLast24HoursCount ? (
+                            <CardSectionLoading />
+                          ) : (
                             <CardSectionValue
-                              value="153"
+                              value={blocksMinedOverTheLast24HoursCount}
                               screenWidth={screenWidth}
                             />
+                            )}
                           </div>
                         </div>
                       )}

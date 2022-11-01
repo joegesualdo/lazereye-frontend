@@ -155,6 +155,41 @@ const fetchDifficultyForAllEpochsInTheLastYear = async (
   })
 }
 
+const fetchBlocksMinedOverTheLast24Hours = async (
+  currentBlockHeight: number
+) => {
+  const twentyFourHoursAgo = new Date(
+    new Date().getTime() - 24 * 60 * 60 * 1000
+  )
+  // approximately 1 year
+  var finished = false
+  const results = Array(300)
+    .fill(0)
+    .map((_, i) => i)
+    .map(async (i) => {
+      if (!finished) {
+        const forHeight = currentBlockHeight - i
+        const block = await fetchBlockStatsForHeight(forHeight)
+        const blockTime = new Date(block.time * 1000)
+        if (blockTime < twentyFourHoursAgo) {
+          finished = true
+          return null
+        } else {
+          return block
+        }
+      } else {
+        return null
+      }
+    })
+    .reverse()
+  const a = await Promise.all(results)
+  return a.filter((element) => {
+    const e = element
+    const isNull = e == null
+    return !isNull
+  })
+}
+
 const fetchChainTxStatsForLastMonth = async () => {
   console.log('about to fetch block count...')
   const data = await fetch('http://127.0.0.1:3030/api/v1/getchaintxstats')
@@ -178,6 +213,8 @@ function App(): React.ReactElement {
     difficultyAtEachEpochInTheLastYear,
     setDifficultyAtEachEpochInTheLastYear,
   ] = useState([])
+  const [blocksMinedOverTheLast24Hours, setBlocksMinedOverTheLast24Hours] =
+    useState(null)
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
@@ -203,6 +240,9 @@ function App(): React.ReactElement {
       const blockCount = await fetchBC()
       // setPrice(jsonData.price)
       setBlockCount(blockCount)
+      const blocksMinedOverTheLast24Hours =
+        await fetchBlocksMinedOverTheLast24Hours(blockCount)
+      setBlocksMinedOverTheLast24Hours(blocksMinedOverTheLast24Hours)
 
       const difficulty = await fetchDifficulty()
       // setPrice(jsonData.price)
@@ -313,10 +353,11 @@ function App(): React.ReactElement {
     secondsBetweenLastDifficultyBlockAndLastBlock / blocksSinceLastRetarget
   const secondsBetweenBlock2016BlocksAgoAndLastBlock =
     timeOfLastBlock - timeOfBlock2016BlocksAgo
-  const avgSecondsPerBlockForLast2016Blocks=
-    secondsBetweenBlock2016BlocksAgoAndLastBlock/ 2016
+  const avgSecondsPerBlockForLast2016Blocks =
+    secondsBetweenBlock2016BlocksAgoAndLastBlock / 2016
   return (
     <Dashboard
+      blocksMinedOverTheLast24HoursCount={blocksMinedOverTheLast24Hours ? blocksMinedOverTheLast24Hours.length : undefined}
       avgSecondsPerBlockForCurrentEpoch={avgSecondsPerBlockForCurrentEpoch}
       avgSecondsPerBlockForLast2016Blocks={avgSecondsPerBlockForLast2016Blocks}
       chainSize={blockchainInfo.size_on_disk}
