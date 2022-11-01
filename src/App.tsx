@@ -181,6 +181,8 @@ function App(): React.ReactElement {
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
+  const [blockStatsForBlock2016BlocksAgo, setBlockStatsForBlock2016BlocksAgo] =
+    useState({})
   const [blockchainInfo, setBlockchainInfo] = useState({})
   const [txOutsetInfo, setTxOutsetInfo] = useState({})
   const [
@@ -212,14 +214,16 @@ function App(): React.ReactElement {
         blockCount
       )
       setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
-
-      const current_difficulty_epoch =
-        blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1
-      const block_height_of_last_difficulty_adjustment =
-        (current_difficulty_epoch - 1) * 2016
-      console.log(
-        `blockheight of last diff: ${block_height_of_last_difficulty_adjustment}`
+      const blockStatsForBlock2016BlocksAgo = await fetchBlockStatsForHeight(
+        blockCount - 2016
       )
+      setBlockStatsForBlock2016BlocksAgo(blockStatsForBlock2016BlocksAgo)
+      const currentDifficultyEpoch = blockCount
+        ? (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD).toFixed(0)
+        : undefined
+
+      const block_height_of_last_difficulty_adjustment =
+        (currentDifficultyEpoch - 1) * 2016
       const blockStatsForHeightOfLastDifficultyAdjustment =
         await fetchBlockStatsForHeight(
           block_height_of_last_difficulty_adjustment
@@ -276,29 +280,16 @@ function App(): React.ReactElement {
       clearInterval(setPriceInterval)
       clearInterval(setCurrentTimeInterval)
     }
-    //
-    // setInterval(async () => {
-    //   console.log('interval!!')
-
-    //   const newBlockCount = await fetchBC()
-    //   console.log(`new block: ${newBlockCount}; old block: ${blockCount}`)
-    //   if (newBlockCount !== blockCount) {
-    //     console.log("doesn't match")
-    //     fetchData().catch(console.error)
-    //   } else {
-    //     console.log('matches')
-    //   }
-    // }, 10000)
   }, [blockCount])
-  // console.log('------')
-  // console.log(`price: ${priceInCents}`)
-  // console.log(`blockCount: ${blockCount}`)
-  // console.log(`totalMoneySupply: ${txOutsetInfo.total_amount}`)
-  // console.log('------')
+
+  const currentDifficultyEpoch = blockCount
+    ? (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD).toFixed(0)
+    : undefined
 
   const timeOfLastBlock = blockStatsForCurrentHeight.time
   const timeOfLastDifficultyAdjustmentBlock =
     blockStatsForHeightOfLastDifficultyAdjustment.time
+  const timeOfBlock2016BlocksAgo = blockStatsForBlock2016BlocksAgo.time
   const percent_of_epoch_complete =
     (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD) % 1.0
   const percent_of_epoch_to_go = 1.0 - percent_of_epoch_complete
@@ -307,14 +298,27 @@ function App(): React.ReactElement {
   const transactionsCountLast30Days = chainTxStatsForLastMonth.window_tx_count
   const totalMoneySupply = txOutsetInfo.total_amount
   const utxoSetSize = txOutsetInfo.txouts
-  const currentDifficultyEpoch = blockCount
-    ? (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1).toFixed(0)
-    : undefined
   const estimatedSecondsUntilRetarget = blockCount
     ? 10.0 * 60.0 * blocksUntilRetarget
     : undefined
+
+  const blocksSinceLastRetarget =
+    BLOCKS_PER_DIFFICULTY_PERIOD - blocksUntilRetarget
+
+  const secondsBetweenLastDifficultyBlockAndLastBlock =
+    timeOfLastBlock - timeOfLastDifficultyAdjustmentBlock
+  console.log(`BOOO: ${timeOfLastBlock}`)
+  console.log(`YOOO: ${timeOfLastDifficultyAdjustmentBlock}`)
+  const avgSecondsPerBlockForCurrentEpoch =
+    secondsBetweenLastDifficultyBlockAndLastBlock / blocksSinceLastRetarget
+  const secondsBetweenBlock2016BlocksAgoAndLastBlock =
+    timeOfLastBlock - timeOfBlock2016BlocksAgo
+  const avgSecondsPerBlockForLast2016Blocks=
+    secondsBetweenBlock2016BlocksAgoAndLastBlock/ 2016
   return (
     <Dashboard
+      avgSecondsPerBlockForCurrentEpoch={avgSecondsPerBlockForCurrentEpoch}
+      avgSecondsPerBlockForLast2016Blocks={avgSecondsPerBlockForLast2016Blocks}
       chainSize={blockchainInfo.size_on_disk}
       utxoSetSize={utxoSetSize}
       priceInCents={priceInCents}

@@ -42,6 +42,8 @@ interface BlockchainSectionProps {
   currentTime: number
   utxoSetSize: number
   chainSize: number
+  avgSecondsPerBlockForCurrentEpoch: number
+  avgSecondsPerBlockForLast2016Blocks: number
 }
 const BlockchainSection: React.FC<BlockchainSectionProps> = ({
   hashrate,
@@ -51,6 +53,8 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
   currentTime,
   utxoSetSize,
   chainSize,
+  avgSecondsPerBlockForCurrentEpoch,
+  avgSecondsPerBlockForLast2016Blocks,
 }: BlockchainSectionProps) => {
   const getSinceLastBlockFontSize = (width: number): number => {
     if (width <= 500) {
@@ -181,7 +185,9 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
                                 <div className={css({})}>
                                   Target time per block
                                 </div>
-                                <div className={css({})}>10:00</div>
+                                <div className={css({})}>
+                                  {getFormattedStringForSeconds(600)}
+                                </div>
                               </div>
                               <div
                                 className={css({
@@ -210,7 +216,13 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
                                 <div className={css({})}>
                                   Avg Time for Current Epoch
                                 </div>
-                                <div className={css({})}>9:25</div>
+                                {!avgSecondsPerBlockForCurrentEpoch ? null : (
+                                  <div className={css({})}>
+                                    {getFormattedStringForSeconds(
+                                      avgSecondsPerBlockForCurrentEpoch
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               <div
                                 className={css({
@@ -239,7 +251,13 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
                                 <div className={css({})}>
                                   Avg Time for Last 2016 Blocks
                                 </div>
-                                <div className={css({})}>10:00</div>
+                                {!avgSecondsPerBlockForCurrentEpoch ? null : (
+                                  <div className={css({})}>
+                                    {getFormattedStringForSeconds(
+                                      avgSecondsPerBlockForLast2016Blocks
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               <div
                                 className={css({

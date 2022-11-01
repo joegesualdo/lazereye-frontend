@@ -75,6 +75,8 @@ interface DashboardProps {
       difficulty: number
     }
   ]
+  avgSecondsPerBlockForCurrentEpoch: number
+  avgSecondsPerBlockForLast2016Blocks: number
 }
 
 const columnCount = (width: number): number => {
@@ -148,6 +150,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   difficultyAtEachEpoch,
   currentTime,
   isMarketCapInDollarsLoading,
+  avgSecondsPerBlockForCurrentEpoch,
+  avgSecondsPerBlockForLast2016Blocks,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -196,6 +200,12 @@ const Dashboard: React.FC<DashboardProps> = ({
               currentTime={currentTime}
               utxoSetSize={utxoSetSize}
               chainSize={chainSize}
+              avgSecondsPerBlockForCurrentEpoch={
+                avgSecondsPerBlockForCurrentEpoch
+              }
+              avgSecondsPerBlockForLast2016Blocks={
+                avgSecondsPerBlockForLast2016Blocks
+              }
             />
           ) : null}
           {columnCount(size.width) == 2 ? (
@@ -237,6 +247,10 @@ const Dashboard: React.FC<DashboardProps> = ({
               currentTime={new Date().valueOf()}
               utxoSetSize={utxoSetSize}
               chainSize={chainSize}
+              avgSecondsPerBlockForCurrentEpoch={
+                avgSecondsPerBlockForCurrentEpoch
+              }
+  avgSecondsPerBlockForLast2016Blocks={avgSecondsPerBlockForLast2016Blocks}
             />
           ) : null}
         </div>
