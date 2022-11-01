@@ -78,6 +78,11 @@ interface DashboardProps {
   avgSecondsPerBlockForCurrentEpoch: number
   avgSecondsPerBlockForLast2016Blocks: number
   blocksMinedOverTheLast24HoursCount: number
+  totalFeesLast24HoursInSats: number
+  avgFeesLast24HoursInSats: number
+  avgFeesLast2016BlocksInSats: number
+      feesVsRewardLast24Hours: number
+      feesVsRewardLast2016Blocks: number
 }
 
 const columnCount = (width: number): number => {
@@ -154,6 +159,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   avgSecondsPerBlockForCurrentEpoch,
   avgSecondsPerBlockForLast2016Blocks,
   blocksMinedOverTheLast24HoursCount,
+  totalFeesLast24HoursInSats,
+  avgFeesLast24HoursInSats,
+  avgFeesLast2016BlocksInSats,
+      feesVsRewardLast24Hours,
+      feesVsRewardLast2016Blocks,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -214,6 +224,12 @@ const Dashboard: React.FC<DashboardProps> = ({
             <MiningEconomicsSection
               screenWidth={size.width}
               subsidyInSatsForCurrentBlock={subsidyInSatsForCurrentBlock}
+              totalFeesLast24HoursInSats={totalFeesLast24HoursInSats}
+              priceInCents={priceInCents}
+              avgFeesLast24HoursInSats={avgFeesLast24HoursInSats}
+              avgFeesLast2016BlocksInSats={avgFeesLast2016BlocksInSats}
+      feesVsRewardLast24Hours={feesVsRewardLast24Hours}
+      feesVsRewardLast2016Blocks={feesVsRewardLast2016Blocks}
             />
           ) : null}
         </div>
@@ -266,6 +282,12 @@ const Dashboard: React.FC<DashboardProps> = ({
             <MiningEconomicsSection
               screenWidth={size.width}
               subsidyInSatsForCurrentBlock={subsidyInSatsForCurrentBlock}
+              totalFeesLast24HoursInSats={totalFeesLast24HoursInSats}
+              priceInCents={priceInCents}
+              avgFeesLast24HoursInSats={avgFeesLast24HoursInSats}
+              avgFeesLast2016BlocksInSats={avgFeesLast2016BlocksInSats}
+      feesVsRewardLast24Hours={feesVsRewardLast24Hours}
+      feesVsRewardLast2016Blocks={feesVsRewardLast2016Blocks}
             />
           </div>
         ) : null}

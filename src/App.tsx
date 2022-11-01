@@ -3,6 +3,15 @@ import reactLogo from './assets/react.svg'
 import './App.css'
 import Dashboard from './components/Dashboard'
 import get24HourPrices from './get24HourPrices'
+async function allSynchronously<T>(
+  resolvables: (() => Promise<T>)[]
+): Promise<T[]> {
+  const results = []
+  for (const resolvable of resolvables) {
+    results.push(await resolvable())
+  }
+  return results
+}
 const BLOCKS_PER_DIFFICULTY_PERIOD = 2016
 const appStyles = {
   backgroundColor: 'rgb(20 26 47/1)',
@@ -189,6 +198,23 @@ const fetchBlocksMinedOverTheLast24Hours = async (
     return !isNull
   })
 }
+const fetchLast2016Blocks = async (currentBlockHeight: number) => {
+  const results = Array(2016)
+    .fill(0)
+    .map((_, i) => i)
+    .map(async (i) => {
+      // We wait 60ms between each request so the bitcoind doesn't get overwhelmed and fail
+      await new Promise((resolve) => setTimeout(resolve, 60 * i))
+      console.log(`waited: ${i} seconds`)
+      console.log(`dude`)
+      console.log(`umyeah: ${i}`)
+      const forHeight = currentBlockHeight - i
+      const block = await fetchBlockStatsForHeight(forHeight)
+      return block
+    })
+    .reverse()
+  return await Promise.all(results)
+}
 
 const fetchChainTxStatsForLastMonth = async () => {
   console.log('about to fetch block count...')
@@ -215,6 +241,7 @@ function App(): React.ReactElement {
   ] = useState([])
   const [blocksMinedOverTheLast24Hours, setBlocksMinedOverTheLast24Hours] =
     useState(null)
+  const [last2016Blocks, setLast2016Blocks] = useState(null)
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
@@ -290,8 +317,12 @@ function App(): React.ReactElement {
       setDifficultyAtEachEpochInTheLastYear(difficultyAtEachEpochInTheLastYear)
 
       // TAKES A VERY LONG TIME
-      const txOutsetInfo = await fetchTxOutsetInfo()
-      setTxOutsetInfo(txOutsetInfo)
+      fetchLast2016Blocks(blockCount).then((last2016Blocks) => {
+        setLast2016Blocks(last2016Blocks)
+        fetchTxOutsetInfo().then((txOutsetInfo) => {
+          setTxOutsetInfo(txOutsetInfo)
+        })
+      })
     }
     const setCurrentTimeInterval = setInterval(async () => {
       setCurrentTime(new Date().valueOf())
@@ -355,9 +386,48 @@ function App(): React.ReactElement {
     timeOfLastBlock - timeOfBlock2016BlocksAgo
   const avgSecondsPerBlockForLast2016Blocks =
     secondsBetweenBlock2016BlocksAgoAndLastBlock / 2016
+  const totalFeesLast24Hours = blocksMinedOverTheLast24Hours
+    ? blocksMinedOverTheLast24Hours.reduce((sum, block) => {
+        return sum + block.totalfee
+      }, 0)
+    : null
+  const totalSubsidyLast24Hours = blocksMinedOverTheLast24Hours
+    ? blocksMinedOverTheLast24Hours.reduce((sum, block) => {
+        return sum + block.subsidy
+      }, 0)
+    : null
+  const avgFeesLast24Hours = totalFeesLast24Hours
+    ? totalFeesLast24Hours / blocksMinedOverTheLast24Hours.length
+    : null
+  const totalFeesLast2016Blocks = last2016Blocks
+    ? last2016Blocks.reduce((sum, block) => {
+        return sum + block.totalfee
+      }, 0)
+    : null
+  const totalSubsidyLast2016Blocks = last2016Blocks
+    ? last2016Blocks.reduce((sum, block) => {
+        return sum + block.subsidy
+      }, 0)
+    : null
+  const avgFeesLast2016Blocks = totalFeesLast2016Blocks
+    ? last2016Blocks.reduce((sum, block) => {
+        return sum + block.totalfee
+      }, 0) / last2016Blocks.length
+    : null
   return (
     <Dashboard
-      blocksMinedOverTheLast24HoursCount={blocksMinedOverTheLast24Hours ? blocksMinedOverTheLast24Hours.length : undefined}
+      feesVsRewardLast24Hours={totalFeesLast24Hours / totalSubsidyLast24Hours}
+      feesVsRewardLast2016Blocks={
+        totalFeesLast2016Blocks / totalSubsidyLast2016Blocks
+      }
+      avgFeesLast24HoursInSats={avgFeesLast24Hours}
+      avgFeesLast2016BlocksInSats={avgFeesLast2016Blocks}
+      totalFeesLast24HoursInSats={totalFeesLast24Hours}
+      blocksMinedOverTheLast24HoursCount={
+        blocksMinedOverTheLast24Hours
+          ? blocksMinedOverTheLast24Hours.length
+          : undefined
+      }
       avgSecondsPerBlockForCurrentEpoch={avgSecondsPerBlockForCurrentEpoch}
       avgSecondsPerBlockForLast2016Blocks={avgSecondsPerBlockForLast2016Blocks}
       chainSize={blockchainInfo.size_on_disk}

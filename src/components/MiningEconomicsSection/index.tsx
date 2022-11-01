@@ -8,14 +8,27 @@ import CardSectionValue from '../CardSectionValue'
 import Card from '../Card'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
+import CardSectionLoading from '../CardSectionLoading'
 
 interface MiningEconomicsSectionProps {
   screenWidth: number
   subsidyInSatsForCurrentBlock: number
+  totalFeesLast24HoursInSats: number
+  priceInCents: number
+  avgFeesLast24HoursInSats: number
+  avgFeesLast2016BlocksInSats: number
+  feesVsRewardLast24Hours: number
+  feesVsRewardLast2016Blocks: number
 }
 const MiningEconomicsSection: React.FC<MiningEconomicsSectionProps> = ({
   screenWidth,
   subsidyInSatsForCurrentBlock,
+  totalFeesLast24HoursInSats,
+  priceInCents,
+  avgFeesLast24HoursInSats,
+  avgFeesLast2016BlocksInSats,
+  feesVsRewardLast24Hours,
+  feesVsRewardLast2016Blocks,
 }: MiningEconomicsSectionProps) => {
   const getSubtitleFontSize = (width: number): number => {
     if (width <= 600) {
@@ -84,18 +97,32 @@ const MiningEconomicsSection: React.FC<MiningEconomicsSectionProps> = ({
                             borderRightWidth: 1,
                           })}
                         >
-                          <CardSectionValue
-                            value={subsidyInSatsForCurrentBlock / 100000000}
-                            postfix="btc"
-                            screenWidth={screenWidth}
-                          />
+                          {!subsidyInSatsForCurrentBlock ? (
+                            <CardSectionLoading />
+                          ) : (
+                            <CardSectionValue
+                              value={subsidyInSatsForCurrentBlock / 100_000_000}
+                              postfix="btc"
+                              screenWidth={screenWidth}
+                            />
+                          )}
                         </div>
                         <div className={css({ width: '50%', paddingLeft: 20 })}>
-                          <CardSectionValue
-                            value="120,000"
-                            screenWidth={screenWidth}
-                            renderPrefix={() => '$'}
-                          />
+                          {!priceInCents || !subsidyInSatsForCurrentBlock ? (
+                            <CardSectionLoading />
+                          ) : (
+                            <CardSectionValue
+                              value={new Intl.NumberFormat('en', {
+                                maximumFractionDigits: 0,
+                              }).format(
+                                ((priceInCents / 100_000_000) *
+                                  subsidyInSatsForCurrentBlock) /
+                                  100
+                              )}
+                              screenWidth={screenWidth}
+                              renderPrefix={() => '$'}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -162,20 +189,36 @@ const MiningEconomicsSection: React.FC<MiningEconomicsSectionProps> = ({
                               borderRightWidth: 1,
                             })}
                           >
-                            <CardSectionValue
-                              value="11.65"
-                              postfix="btc"
-                              screenWidth={screenWidth}
-                            />
+                            {!totalFeesLast24HoursInSats ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={(
+                                  totalFeesLast24HoursInSats / 100_000_000
+                                ).toFixed(2)}
+                                postfix="btc"
+                                screenWidth={screenWidth}
+                              />
+                            )}
                           </div>
                           <div
                             className={css({ width: '50%', paddingLeft: 20 })}
                           >
-                            <CardSectionValue
-                              value="214,000"
-                              screenWidth={screenWidth}
-                              renderPrefix={() => '$'}
-                            />
+                            {!priceInCents || !totalFeesLast24HoursInSats ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={new Intl.NumberFormat('en', {
+                                  maximumFractionDigits: 0,
+                                }).format(
+                                  ((priceInCents / 100_000_000) *
+                                    totalFeesLast24HoursInSats) /
+                                    100
+                                )}
+                                screenWidth={screenWidth}
+                                renderPrefix={() => '$'}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
@@ -247,20 +290,36 @@ const MiningEconomicsSection: React.FC<MiningEconomicsSectionProps> = ({
                               borderRightWidth: 1,
                             })}
                           >
-                            <CardSectionValue
-                              value="0.1"
-                              postfix="btc"
-                              screenWidth={screenWidth}
-                            />
+                            {!avgFeesLast24HoursInSats ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={(
+                                  avgFeesLast24HoursInSats / 100_000_000
+                                ).toFixed(2)}
+                                postfix="btc"
+                                screenWidth={screenWidth}
+                              />
+                            )}
                           </div>
                           <div
                             className={css({ width: '50%', paddingLeft: 20 })}
                           >
-                            <CardSectionValue
-                              value="1,840"
-                              screenWidth={screenWidth}
-                              renderPrefix={() => '$'}
-                            />
+                            {!priceInCents || !avgFeesLast24HoursInSats ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={new Intl.NumberFormat('en', {
+                                  maximumFractionDigits: 0,
+                                }).format(
+                                  ((priceInCents / 100_000_000) *
+                                    avgFeesLast24HoursInSats) /
+                                    100
+                                )}
+                                screenWidth={screenWidth}
+                                renderPrefix={() => '$'}
+                              />
+                            )}
                           </div>
                         </div>
                         <div
@@ -291,20 +350,36 @@ const MiningEconomicsSection: React.FC<MiningEconomicsSectionProps> = ({
                               borderRightWidth: 1,
                             })}
                           >
-                            <CardSectionValue
-                              value="0.6"
-                              postfix="btc"
-                              screenWidth={screenWidth}
-                            />
+                            {!avgFeesLast2016BlocksInSats ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={(
+                                  avgFeesLast2016BlocksInSats / 100_000_000
+                                ).toFixed(2)}
+                                postfix="btc"
+                                screenWidth={screenWidth}
+                              />
+                            )}
                           </div>
                           <div
                             className={css({ width: '50%', paddingLeft: 20 })}
                           >
-                            <CardSectionValue
-                              value="11,237"
-                              screenWidth={screenWidth}
-                              renderPrefix={() => '$'}
-                            />
+                            {!priceInCents || !avgFeesLast2016BlocksInSats ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={new Intl.NumberFormat('en', {
+                                  maximumFractionDigits: 0,
+                                }).format(
+                                  ((priceInCents / 100_000_000) *
+                                    avgFeesLast2016BlocksInSats) /
+                                    100
+                                )}
+                                screenWidth={screenWidth}
+                                renderPrefix={() => '$'}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
@@ -376,20 +451,33 @@ const MiningEconomicsSection: React.FC<MiningEconomicsSectionProps> = ({
                               borderRightWidth: 1,
                             })}
                           >
-                            <CardSectionValue
-                              value="1.53"
-                              postfix="%"
-                              screenWidth={screenWidth}
-                            />
+                            {!feesVsRewardLast24Hours ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={(feesVsRewardLast24Hours * 100).toFixed(
+                                  2
+                                )}
+                                postfix="%"
+                                screenWidth={screenWidth}
+                              />
+                            )}
                           </div>
                           <div
                             className={css({ width: '50%', paddingLeft: 20 })}
                           >
-                            <CardSectionValue
-                              value="98.47"
-                              postfix="%"
-                              screenWidth={screenWidth}
-                            />
+                            {!feesVsRewardLast24Hours ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={(
+                                  (1 - feesVsRewardLast24Hours) *
+                                  100
+                                ).toFixed(2)}
+                                postfix="%"
+                                screenWidth={screenWidth}
+                              />
+                            )}
                           </div>
                         </div>
                         <div
@@ -420,20 +508,33 @@ const MiningEconomicsSection: React.FC<MiningEconomicsSectionProps> = ({
                               borderRightWidth: 1,
                             })}
                           >
-                            <CardSectionValue
-                              value="0.93"
-                              postfix="%"
-                              screenWidth={screenWidth}
-                            />
+                            {!feesVsRewardLast2016Blocks ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={(
+                                  feesVsRewardLast2016Blocks * 100
+                                ).toFixed(2)}
+                                postfix="%"
+                                screenWidth={screenWidth}
+                              />
+                            )}
                           </div>
                           <div
                             className={css({ width: '50%', paddingLeft: 20 })}
                           >
-                            <CardSectionValue
-                              value="99.07"
-                              postfix="%"
-                              screenWidth={screenWidth}
-                            />
+                            {!feesVsRewardLast2016Blocks ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={(
+                                  (1 - feesVsRewardLast2016Blocks) *
+                                  100
+                                ).toFixed(2)}
+                                postfix="%"
+                                screenWidth={screenWidth}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
