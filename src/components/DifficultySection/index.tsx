@@ -10,6 +10,7 @@ import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
 import SectionHeader from '../SectionHeader'
 import { Bars } from 'react-loader-spinner'
+import CardSectionLoading from '../CardSectionLoading'
 interface DifficultySectionProps {
   difficulty: number
   blocksUntilRetarget: number
@@ -95,17 +96,23 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                             title="Difficulty"
                             screenWidth={screenWidth}
                           />
-                          <CardSectionValue
-                            value={(difficulty / 1000000000000).toFixed(2)}
-                            postfix="t"
+                          {!difficulty ? (
+                            <CardSectionLoading />
+                          ) : (
+                            <CardSectionValue
+                              value={(difficulty / 1000000000000).toFixed(2)}
+                              postfix="t"
+                              screenWidth={screenWidth}
+                            />
+                          )}
+                        </div>
+                        {!difficulty ? null : (
+                          <PercentChangeRow
+                            change={6}
+                            text={'vs last epoch'}
                             screenWidth={screenWidth}
                           />
-                        </div>
-                        <PercentChangeRow
-                          change={6}
-                          text={'vs last epoch'}
-                          screenWidth={screenWidth}
-                        />
+                        )}
                       </div>
                     )}
                   />
@@ -179,12 +186,16 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           title="Blocks Until Retarget"
                           screenWidth={screenWidth}
                         />
-                        <CardSectionValue
-                          value={new Intl.NumberFormat().format(
-                            blocksUntilRetarget
-                          )}
-                          screenWidth={screenWidth}
-                        />
+                        {!blocksUntilRetarget ? (
+                          <CardSectionLoading />
+                        ) : (
+                          <CardSectionValue
+                            value={new Intl.NumberFormat().format(
+                              blocksUntilRetarget
+                            )}
+                            screenWidth={screenWidth}
+                          />
+                        )}
                       </div>
                     </div>
                   )}
@@ -214,12 +225,16 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           title="Current Epoch"
                           screenWidth={screenWidth}
                         />
-                        <CardSectionValue
-                          value={new Intl.NumberFormat().format(
-                            currentDifficultyEpoch
-                          )}
-                          screenWidth={screenWidth}
-                        />
+                        {!currentDifficultyEpoch ? (
+                          <CardSectionLoading />
+                        ) : (
+                          <CardSectionValue
+                            value={new Intl.NumberFormat().format(
+                              currentDifficultyEpoch
+                            )}
+                            screenWidth={screenWidth}
+                          />
+                        )}
                       </div>
                     </div>
                   )}
@@ -255,14 +270,18 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           title="Days Until Next Retarget"
                           screenWidth={screenWidth}
                         />
-                        <CardSectionValue
-                          value={(
-                            estimatedSecondsUntilRetarget /
-                            (60 * 60 * 24)
-                          ).toFixed(0)}
-                          postfix="days"
-                          screenWidth={screenWidth}
-                        />
+                        {!estimatedSecondsUntilRetarget ? (
+                          <CardSectionLoading />
+                        ) : (
+                          <CardSectionValue
+                            value={(
+                              estimatedSecondsUntilRetarget /
+                              (60 * 60 * 24)
+                            ).toFixed(0)}
+                            postfix="days"
+                            screenWidth={screenWidth}
+                          />
+                        )}
                       </div>
                     </div>
                   )}
@@ -292,12 +311,16 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           title="Date of Next Retarget"
                           screenWidth={screenWidth}
                         />
-                        <CardSectionValue
-                          postfix={getDateFormatForSecondsInTheFuture(
-                            estimatedSecondsUntilRetarget
-                          )}
-                          screenWidth={screenWidth}
-                        />
+                        {!estimatedSecondsUntilRetarget ? (
+                          <CardSectionLoading />
+                        ) : (
+                          <CardSectionValue
+                            postfix={getDateFormatForSecondsInTheFuture(
+                              estimatedSecondsUntilRetarget
+                            )}
+                            screenWidth={screenWidth}
+                          />
+                        )}
                       </div>
                     </div>
                   )}

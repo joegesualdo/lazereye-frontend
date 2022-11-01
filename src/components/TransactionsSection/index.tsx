@@ -6,6 +6,7 @@ import CardSection from '../CardSection'
 import CardSectionTitle from '../CardSectionTitle'
 import CardSectionValue from '../CardSectionValue'
 import Card from '../Card'
+import CardSectionLoading from '../CardSectionLoading'
 
 interface TransactionsSectionProps {
   transactionsCountLast30Days: number
@@ -56,12 +57,16 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({
                         title="Transactions 30 Day"
                         screenWidth={screenWidth}
                       />
-                      <CardSectionValue
-                        value={new Intl.NumberFormat().format(
-                          transactionsCountLast30Days
-                        )}
-                        screenWidth={screenWidth}
-                      />
+                      {!transactionsCountLast30Days ? (
+                        <CardSectionLoading />
+                      ) : (
+                        <CardSectionValue
+                          value={new Intl.NumberFormat().format(
+                            transactionsCountLast30Days
+                          )}
+                          screenWidth={screenWidth}
+                        />
+                      )}
                     </div>
                   </div>
                 )}
@@ -91,11 +96,15 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({
                         title="TPS 30 Day"
                         screenWidth={screenWidth}
                       />
-                      <CardSectionValue
-                        value={tps30Day.toFixed(2)}
-                        postfix="tx/s"
-                        screenWidth={screenWidth}
-                      />
+                      {!tps30Day ? (
+                        <CardSectionLoading />
+                      ) : (
+                        <CardSectionValue
+                          value={tps30Day.toFixed(2)}
+                          postfix="tx/s"
+                          screenWidth={screenWidth}
+                        />
+                      )}
                     </div>
                   </div>
                 )}

@@ -3,6 +3,7 @@ import { css, cx } from '@emotion/css'
 import CardSection from './../CardSection'
 import CardSectionTitle from '../CardSectionTitle'
 import CardSectionValue from '../CardSectionValue'
+import CardSectionLoading from '../CardSectionLoading'
 interface BlockheightTransactionsCardSectionContentProps {
   blockheight: number
   transactionsCount: number
@@ -36,10 +37,14 @@ const BlockheightTransactionsCardSectionContent: React.FC<
             }}
           >
             <CardSectionTitle title="Blockheight" screenWidth={screenWidth} />
-            <CardSectionValue
-              value={new Intl.NumberFormat().format(blockheight)}
-              screenWidth={screenWidth}
-            />
+            {!blockheight ? (
+              <CardSectionLoading />
+            ) : (
+              <CardSectionValue
+                value={new Intl.NumberFormat().format(blockheight)}
+                screenWidth={screenWidth}
+              />
+            )}
           </div>
         )}
       />
@@ -59,13 +64,17 @@ const BlockheightTransactionsCardSectionContent: React.FC<
             }}
           >
             <CardSectionTitle title="Transactions" screenWidth={screenWidth} />
-            <CardSectionValue
-              value={new Intl.NumberFormat('en-IN', {
-                maximumSignificantDigits: 5,
-              }).format(transactionsCount / 1_000_000)}
-              postfix="mm"
-              screenWidth={screenWidth}
-            />
+            {!transactionsCount ? (
+              <CardSectionLoading />
+            ) : (
+              <CardSectionValue
+                value={new Intl.NumberFormat('en-IN', {
+                  maximumSignificantDigits: 5,
+                }).format(transactionsCount / 1_000_000)}
+                postfix="mm"
+                screenWidth={screenWidth}
+              />
+            )}
           </div>
         )}
       />

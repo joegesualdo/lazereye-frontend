@@ -298,6 +298,12 @@ function App(): React.ReactElement {
     percent_of_epoch_to_go * BLOCKS_PER_DIFFICULTY_PERIOD
   const transactionsCountLast30Days = chainTxStatsForLastMonth.window_tx_count
   const totalMoneySupply = txOutsetInfo.total_amount
+  const currentDifficultyEpoch = blockCount
+    ? (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1).toFixed(0)
+    : undefined
+  const estimatedSecondsUntilRetarget = blockCount
+    ? 10.0 * 60.0 * blocksUntilRetarget
+    : undefined
   return (
     <Dashboard
       priceInCents={priceInCents}
@@ -315,12 +321,9 @@ function App(): React.ReactElement {
         transactionsCountLast30Days / chainTxStatsForLastMonth.window_interval
       }
       difficulty={difficulty}
-      currentDifficultyEpoch={(
-        blockCount / BLOCKS_PER_DIFFICULTY_PERIOD +
-        1
-      ).toFixed(0)}
+      currentDifficultyEpoch={currentDifficultyEpoch}
       blocksUntilRetarget={(() => {
-        return Math.floor(blocksUntilRetarget)
+        return blockCount ? Math.floor(blocksUntilRetarget) : undefined
       })()}
       // averageSecondsPerBlockForCurrentEpoch={(() => {
       //   const blocks_since_last_retarget =
@@ -331,7 +334,7 @@ function App(): React.ReactElement {
       //   const average_seconds_per_block_for_current_epoch =
       //     duration_since_last_difficulty_adjustment / blocks_since_last_retarget
       // })()}
-      estimatedSecondsUntilRetarget={10.0 * 60.0 * blocksUntilRetarget}
+      estimatedSecondsUntilRetarget={estimatedSecondsUntilRetarget}
       estimatedHashRateForLast2016Blocks={networkHashPsForLast2016Blocks}
       difficultyAtEachEpoch={difficultyAtEachEpochInTheLastYear}
       currentTime={currentTime}

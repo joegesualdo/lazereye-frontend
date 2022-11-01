@@ -9,6 +9,8 @@ import CardSectionValue from '../CardSectionValue'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
 import { Bars, Oval } from 'react-loader-spinner'
+import CardSectionLoading from '../CardSectionLoading'
+import LoadingAnimation from '../LoadingAnimation'
 interface MarketDataCardProps {
   priceInCents: number
   marketCapInDollars: number
@@ -71,19 +73,25 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                           title="Price"
                           screenWidth={screenWidth}
                         />
-                        <CardSectionValue
-                          value={new Intl.NumberFormat('en', {
-                            maximumFractionDigits: 0,
-                          }).format(priceInCents / 100)}
-                          renderPrefix={() => '$'}
-                          screenWidth={screenWidth}
-                        />
+                        {!priceInCents ? (
+                          <CardSectionLoading />
+                        ) : (
+                          <CardSectionValue
+                            value={new Intl.NumberFormat('en', {
+                              maximumFractionDigits: 0,
+                            }).format(priceInCents / 100)}
+                            renderPrefix={() => '$'}
+                            screenWidth={screenWidth}
+                          />
+                        )}
                       </div>
-                      <PercentChangeRow
-                        screenWidth={screenWidth}
-                        change={2}
-                        text={'vs last 24 hours'}
-                      />
+                      {!priceInCents ? null : (
+                        <PercentChangeRow
+                          screenWidth={screenWidth}
+                          change={2}
+                          text={'vs last 24 hours'}
+                        />
+                      )}
                     </div>
                   )}
                 />
@@ -97,27 +105,7 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
               })}
             >
               {pricesLast24Hours.length == 0 ? (
-                <div
-                  className={css({
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    height: "100%",
-                  })}
-                >
-                  <Bars
-                    height="20"
-                    width="20"
-                    color="rgb(255, 45, 85)"
-                    ariaLabel="bars-loading"
-                    wrapperStyle={{}}
-                    wrapperClass={css({
-                      height: 20,
-                      alignSelf: 'center',
-                    })}
-                    visible={true}
-                  />
-                </div>
+                <LoadingAnimation />
               ) : (
                 <LazereyeChart
                   // data={Array.from('x'.repeat(15)).map(() => ({
@@ -163,27 +151,7 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                       />
 
                       {isMarketCapInDollarsLoading ? (
-                        <div
-                          className={css({
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignContent: 'center',
-                            height: 50,
-                          })}
-                        >
-                          <Bars
-                            height="20"
-                            width="20"
-                            color="rgb(255, 45, 85)"
-                            ariaLabel="bars-loading"
-                            wrapperStyle={{}}
-                            wrapperClass={css({
-                              height: 20,
-                              alignSelf: 'center',
-                            })}
-                            visible={true}
-                          />
-                        </div>
+                        <CardSectionLoading />
                       ) : (
                         <CardSectionValue
                           screenWidth={screenWidth}
@@ -221,19 +189,23 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                         title="Sats Per Dollar"
                         screenWidth={screenWidth}
                       />
-                      <CardSectionValue
-                        value={(() => {
-                          const satPriceInCents = priceInCents / 100_000_000
-                          const satsPerDollar = 100 / satPriceInCents
-                          return new Intl.NumberFormat({}).format(
-                            satsPerDollar.toFixed(0)
-                          )
-                        })()}
-                        screenWidth={screenWidth}
-                        renderPrefix={() => (
-                          <i className="fak fa-satoshisymbol-solidtilt" />
-                        )}
-                      />
+                      {!priceInCents ? (
+                        <CardSectionLoading />
+                      ) : (
+                        <CardSectionValue
+                          value={(() => {
+                            const satPriceInCents = priceInCents / 100_000_000
+                            const satsPerDollar = 100 / satPriceInCents
+                            return new Intl.NumberFormat({}).format(
+                              satsPerDollar.toFixed(0)
+                            )
+                          })()}
+                          screenWidth={screenWidth}
+                          renderPrefix={() => (
+                            <i className="fak fa-satoshisymbol-solidtilt" />
+                          )}
+                        />
+                      )}
                     </div>
                   </div>
                 )}

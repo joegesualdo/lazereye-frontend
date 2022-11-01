@@ -10,6 +10,7 @@ import Card from '../Card'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
 import { Bars } from 'react-loader-spinner'
+import CardSectionLoading from '../CardSectionLoading'
 
 interface MiningDataSectionProps {
   hashrate: number
@@ -77,20 +78,26 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                             title="Hash Rate Last 2016 Blocks"
                             screenWidth={screenWidth}
                           />
-                          <CardSectionValue
-                            value={(
-                              estimatedHashRateForLast2016Blocks /
-                              1_000_000_000_000_000_000
-                            ).toFixed(2)}
-                            postfix="eh/s"
+                          {!estimatedHashRateForLast2016Blocks ? (
+                            <CardSectionLoading />
+                          ) : (
+                            <CardSectionValue
+                              value={(
+                                estimatedHashRateForLast2016Blocks /
+                                1_000_000_000_000_000_000
+                              ).toFixed(2)}
+                              postfix="eh/s"
+                              screenWidth={screenWidth}
+                            />
+                          )}
+                        </div>
+                        {!estimatedHashRateForLast2016Blocks ? null : (
+                          <PercentChangeRow
+                            change={2}
+                            text={'vs yesterday'}
                             screenWidth={screenWidth}
                           />
-                        </div>
-                        <PercentChangeRow
-                          change={2}
-                          text={'vs yesterday'}
-                          screenWidth={screenWidth}
-                        />
+                        )}
                       </div>
                     )}
                   />
