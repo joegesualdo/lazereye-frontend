@@ -8,6 +8,7 @@ import CardSectionValue from '../CardSectionValue'
 import Card from '../Card'
 import LazereyeChart from '../LazereyeChart'
 import PercentChangeRow from '../PercentChangeRow'
+import CardSectionLoading from '../CardSectionLoading'
 
 const getSecondsSinceUnixTimestamp = (unixTimestamp, currentTime) => {
   console.log('unixTimestamp of last block')
@@ -39,6 +40,8 @@ interface BlockchainSectionProps {
   screenWidth: number
   timeOfLastBlock: number
   currentTime: number
+  utxoSetSize: number
+  chainSize: number
 }
 const BlockchainSection: React.FC<BlockchainSectionProps> = ({
   hashrate,
@@ -46,6 +49,8 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
   screenWidth,
   timeOfLastBlock,
   currentTime,
+  utxoSetSize,
+  chainSize,
 }: BlockchainSectionProps) => {
   const getSinceLastBlockFontSize = (width: number): number => {
     if (width <= 500) {
@@ -299,11 +304,15 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
                                 title="UTXO Set Size"
                                 screenWidth={screenWidth}
                               />
-                              <CardSectionValue
-                                value="83.39"
-                                postfix="mm"
-                                screenWidth={screenWidth}
-                              />
+                              {!utxoSetSize ? (
+                                <CardSectionLoading />
+                              ) : (
+                                <CardSectionValue
+                                  value={(utxoSetSize / 1_000_000).toFixed(2)}
+                                  postfix="mm"
+                                  screenWidth={screenWidth}
+                                />
+                              )}
                             </div>
                           </div>
                         )}
@@ -348,11 +357,15 @@ const BlockchainSection: React.FC<BlockchainSectionProps> = ({
                                 title="Chain size"
                                 screenWidth={screenWidth}
                               />
-                              <CardSectionValue
-                                value="490.8"
-                                postfix="GB"
-                                screenWidth={screenWidth}
-                              />
+                              {!chainSize ? (
+                                <CardSectionLoading />
+                              ) : (
+                                <CardSectionValue
+                                  value={(chainSize / 1_000_000_000).toFixed(2)}
+                                  postfix="GB"
+                                  screenWidth={screenWidth}
+                                />
+                              )}
                             </div>
                           </div>
                         )}

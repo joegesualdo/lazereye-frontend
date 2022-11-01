@@ -43,6 +43,8 @@ function useWindowSize(): Size {
 }
 interface DashboardProps {
   blockheight: number
+  chainSize: number
+  utxoSetSize: number
   pricesLast24Hours: {
     t: number
     p: number
@@ -127,6 +129,8 @@ const LogoAndBlockHeightTransactions: React.FC<
 
 const Dashboard: React.FC<DashboardProps> = ({
   blockheight,
+  chainSize,
+  utxoSetSize,
   pricesLast24Hours,
   subsidyInSatsForCurrentBlock,
   priceInCents,
@@ -190,6 +194,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               screenWidth={size.width}
               timeOfLastBlock={timeOfLastBlock}
               currentTime={currentTime}
+              utxoSetSize={utxoSetSize}
+              chainSize={chainSize}
             />
           ) : null}
           {columnCount(size.width) == 2 ? (
@@ -229,6 +235,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               screenWidth={size.width}
               timeOfLastBlock={timeOfLastBlock}
               currentTime={new Date().valueOf()}
+              utxoSetSize={utxoSetSize}
+              chainSize={chainSize}
             />
           ) : null}
         </div>

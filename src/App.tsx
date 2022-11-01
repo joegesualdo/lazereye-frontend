@@ -49,6 +49,11 @@ const fetchTxOutsetInfo = async () => {
   const txOutsetInfo = await data.json()
   return txOutsetInfo
 }
+const fetchBlockchainInfo = async () => {
+  const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockchaininfo`)
+  const blockchainInfo = await data.json()
+  return blockchainInfo
+}
 const fetchBlockStatsForHeight = async (height: number) => {
   console.log('about to fetch block count...')
   const data = await fetch(
@@ -176,6 +181,7 @@ function App(): React.ReactElement {
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
+  const [blockchainInfo, setBlockchainInfo] = useState({})
   const [txOutsetInfo, setTxOutsetInfo] = useState({})
   const [
     blockStatsForHeightOfLastDifficultyAdjustment,
@@ -200,6 +206,8 @@ function App(): React.ReactElement {
       // setPrice(jsonData.price)
       setDifficulty(difficulty)
 
+      const blockchainInfo = await fetchBlockchainInfo()
+      setBlockchainInfo(blockchainInfo)
       const blockStatsForCurrentHeight = await fetchBlockStatsForHeight(
         blockCount
       )
@@ -298,6 +306,7 @@ function App(): React.ReactElement {
     percent_of_epoch_to_go * BLOCKS_PER_DIFFICULTY_PERIOD
   const transactionsCountLast30Days = chainTxStatsForLastMonth.window_tx_count
   const totalMoneySupply = txOutsetInfo.total_amount
+  const utxoSetSize = txOutsetInfo.txouts
   const currentDifficultyEpoch = blockCount
     ? (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD + 1).toFixed(0)
     : undefined
@@ -306,6 +315,8 @@ function App(): React.ReactElement {
     : undefined
   return (
     <Dashboard
+      chainSize={blockchainInfo.size_on_disk}
+      utxoSetSize={utxoSetSize}
       priceInCents={priceInCents}
       pricesLast24Hours={last24HourPrices}
       blockheight={blockCount}
