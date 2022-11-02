@@ -97,10 +97,11 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                       {!priceInCents || !oldestPriceInCents ? null : (
                         <PercentChangeRow
                           screenWidth={screenWidth}
-                          change={
-                            (((priceInCents - oldestPriceInCents) /
-                            oldestPriceInCents) * 100).toFixed(2)
-                          }
+                          change={(
+                            ((priceInCents - oldestPriceInCents) /
+                              oldestPriceInCents) *
+                            100
+                          ).toFixed(2)}
                           text={'vs last 24 hours'}
                         />
                       )}
@@ -128,6 +129,22 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                     x: new Date(d.time).valueOf(),
                     y: Number(d.price),
                   }))}
+                  formatTitle={(title) => {
+                    const date = new Date(Number(title))
+                    const dateString = date.toLocaleDateString('en-us', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                    const timeString = date.toLocaleTimeString('en-us', {
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    })
+                    return `${dateString}, ${timeString}`
+                  }}
+                  formatBody={(body) => {
+                    return `$${body}`
+                  }}
                 />
               )}
             </div>

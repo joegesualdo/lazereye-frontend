@@ -39,7 +39,7 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
   const [leftSectionHeight, setHeight] = useState(0)
 
   useEffect(() => {
-    setHeight(leftSectionRef.current.clientHeight)
+    setHeight(leftSectionRef.current.clientHeight * 0.9)
   })
   return (
     <div
@@ -55,6 +55,7 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
             <div
               className={css({
                 display: 'flex',
+                alignItems: 'end',
               })}
             >
               <div
@@ -98,12 +99,12 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                         {!estimatedHashRateForLast2016Blocks ||
                         !networkHashrateForBlockMined24HoursAgo ? null : (
                           <PercentChangeRow
-                            change={
-                              (((estimatedHashRateForLast2016Blocks -
+                            change={(
+                              ((estimatedHashRateForLast2016Blocks -
                                 networkHashrateForBlockMined24HoursAgo) /
                                 networkHashrateForBlockMined24HoursAgo) *
-                              100).toFixed(2)
-                            }
+                              100
+                            ).toFixed(2)}
                             text={'vs yesterday'}
                             screenWidth={screenWidth}
                           />
@@ -148,6 +149,16 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                     data={hashrateForEachOfTheLast2016BlocksWithRangeof2016.map(
                       (d) => ({ x: d.height, y: d.hashrate })
                     )}
+                    formatTitle={(title) => {
+                      const blockString = new Intl.NumberFormat({}).format(
+                        Number(String(title))
+                      )
+                      return `Block: ${blockString}`
+                    }}
+                    formatBody={(body: string) => {
+                      const hashrate= Number(String(body).replace(/,/g, ''))
+                      return `${(hashrate/ 1_000_000_000_000_000_000).toFixed(2)} eh/s`
+                    }}
                   />
                 )}
               </div>

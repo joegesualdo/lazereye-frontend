@@ -56,7 +56,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
   const [leftSectionHeight, setHeight] = useState(0)
 
   useEffect(() => {
-    setHeight(leftSectionRef.current.clientHeight)
+    setHeight(leftSectionRef.current.clientHeight * 0.9)
   })
   return (
     <div
@@ -72,6 +72,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
             <div
               className={css({
                 display: 'flex',
+                alignItems: 'end',
               })}
             >
               <div
@@ -161,6 +162,16 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                       x: d.height,
                       y: d.difficulty,
                     }))}
+                    formatTitle={(title) => {
+                      const blockString = new Intl.NumberFormat({}).format(
+                        Number(String(title))
+                      )
+                      return `Block: ${blockString}`
+                    }}
+                    formatBody={(body: string) => {
+                      const difficulty = Number(String(body).replace(/,/g, ''))
+                      return `${(difficulty / 1000000000000).toFixed(2)} T`
+                    }}
                   />
                 )}
               </div>

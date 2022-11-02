@@ -31,9 +31,13 @@ ChartJS.register(
 
 interface LazereyeChartProps {
   data: [{ x: number; y: number }]
+  formatTitle: (title: string) => string
+  formatBody: (body: string) => string
 }
 const LazereyeChart: React.FC<LazereyeChart> = ({
   data,
+  formatTitle,
+  formatBody,
 }: LazereyeChartProps) => {
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipData, setTooltipData] = useState(null)
@@ -44,6 +48,7 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
   const customTooltip = useCallback((context) => {
     // const tooltipModel = context.tooltip
 
+    console.log(context.tooltip.x)
     // if (context.tooltip.opacity == 0) {
     //   // hide tooltip visibilty
     //   setTooltipVisible(false)
@@ -52,6 +57,7 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
 
     const chart = chartRef.current
     const canvas = chart.canvas
+    const canvasClientRect = canvas.getBoundingClientRect()
     //if (canvas) {
     // enable tooltip visibilty
     // setTooltipVisible(true)
@@ -79,11 +85,16 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
       tooltipEl.innerHTML = '<table></table>'
       document.body.appendChild(tooltipEl)
     }
+    let toolTipBoundingRect = tooltipEl.getBoundingClientRect()
 
     // Hide if no tooltip
     const tooltipModel = context.tooltip
     if (tooltipModel.opacity === 0) {
       tooltipEl.style.opacity = 0
+      tooltipEl.style.backgroundColor = 'rgb(119, 126, 145, 1)'
+      tooltipEl.style.padding = '2px'
+      tooltipEl.style.borderRadius = '5px'
+      tooltipEl.style.textAlign = 'center'
       return
     }
 
@@ -106,18 +117,28 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
 
       let innerHtml = '<thead>'
 
-      titleLines.forEach(function (title) {
-        innerHtml += '<tr><th>' + title + '</th></tr>'
+      titleLines.forEach(function (title, index) {
+        console.log(title)
+        const formattedTitle = formatTitle(title)
+        innerHtml += `<tr><th class="${css({
+          fontSize: 8,
+          lineHeight: 1,
+        })}">${formattedTitle}</th></tr>`
       })
       innerHtml += '</thead><tbody>'
 
       bodyLines.forEach(function (body, i) {
         const colors = tooltipModel.labelColors[i]
-        let style = 'background:' + colors.backgroundColor
-        style += '; border-color:' + colors.borderColor
-        style += '; border-width: 2px'
-        const span = '<span style="' + style + '"></span>'
-        innerHtml += '<tr><td>' + span + body + '</td></tr>'
+        const formattedBody = formatBody(body)
+        const span = `<span class="${css({
+          borderColor: colors.borderColor,
+          borderWidth: 2,
+          width: '100%',
+          fontSize: 15,
+          fontWeight: 800,
+          lineHeight: 1,
+        })}">${formattedBody}</span>`
+        innerHtml += `<tr><td>${span}</td></tr>`
       })
       innerHtml += '</tbody>'
 
@@ -132,9 +153,15 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
     tooltipEl.style.opacity = 1
     tooltipEl.style.position = 'absolute'
     tooltipEl.style.left =
-      position.left + window.pageXOffset + tooltipModel.caretX + 'px'
-     tooltipEl.style.top =
-      position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+      position.left -
+      toolTipBoundingRect.width / 2 +
+      window.pageXOffset +
+      tooltipModel.caretX +
+      'px'
+    // tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
+    //tooltipEl.style.left = canvasPosition.left + 'px'
+    //tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
+    tooltipEl.style.top = canvasClientRect.top - 50 + 'px'
     // tooltipEl.style.font = bodyFont.string
     tooltipEl.style.padding =
       tooltipModel.padding + 'px ' + tooltipModel.padding + 'px'
@@ -188,6 +215,7 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
       tooltip: {
         mode: 'index',
         intersect: false,
+        enabled: false,
         external: customTooltip,
       },
       hover: { mode: null },
@@ -260,7 +288,32 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
       ref={chartRef}
       options={options}
       data={chartData}
+      plugins={[
+        {
+          afterDraw: (chart) => {
+            // Add vertical line: https://stackoverflow.com/questions/72998998/how-to-make-vertical-line-when-hovering-cursor-chart-js
+            if (chart.tooltip?._active?.length) {
+              let x = chart.tooltip._active[0].element.x
+              let yAxis = chart.scales.y
+              let ctx = chart.ctx
+              ctx.save()
+              ctx.beginPath()
+              ctx.setLineDash([5, 5])
+              ctx.moveTo(x, yAxis.top)
+              ctx.lineTo(x, yAxis.bottom)
+              ctx.lineWidth = 1
+              ctx.strokeStyle = 'rgb(171, 171, 172)'
+              ctx.stroke()
+              ctx.restore()
+            }
+          },
+        },
+      ]}
     />
   ) : null
+}
+LazereyeChart.defaultProps = {
+  formatTitle: (title) => title,
+  formatBody: (body) => body,
 }
 export default LazereyeChart
