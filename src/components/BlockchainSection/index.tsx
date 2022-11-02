@@ -11,23 +11,17 @@ import PercentChangeRow from '../PercentChangeRow'
 import CardSectionLoading from '../CardSectionLoading'
 
 const getSecondsSinceUnixTimestamp = (unixTimestamp, currentTime) => {
-  console.log('unixTimestamp of last block')
   const unixTimestampInMilliseconds = unixTimestamp * 1000
   const blockTime = new Date(unixTimestampInMilliseconds)
   const currentDateTime = new Date(currentTime)
-  console.log('now')
-  console.log(currentDateTime.valueOf())
   const msSinceLastBlock = currentDateTime.valueOf() - blockTime.valueOf()
   const secondsSinceLastBlock = msSinceLastBlock / 1000
   const utcSecondsSinceEpoch = Math.round(secondsSinceLastBlock)
-  console.log(utcSecondsSinceEpoch)
 
   return utcSecondsSinceEpoch
 }
 
 const getFormattedStringForSeconds = (seconds) => {
-  console.log('seconds to format')
-  console.log(seconds)
   var date = new Date(null)
   date.setSeconds(seconds) // specify value for SECONDS here
   var result = date.toISOString().substr(14, 5)

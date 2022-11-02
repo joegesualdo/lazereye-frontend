@@ -81,10 +81,10 @@ interface DashboardProps {
   totalFeesLast24HoursInSats: number
   avgFeesLast24HoursInSats: number
   avgFeesLast2016BlocksInSats: number
-      feesVsRewardLast24Hours: number
-      feesVsRewardLast2016Blocks: number
-      difficultyForHeightOfTwoDifficultyAdjustmentsAgo: number
-      networkHashrateForBlockMined24HoursAgo: number
+  feesVsRewardLast24Hours: number
+  feesVsRewardLast2016Blocks: number
+  difficultyForHeightOfTwoDifficultyAdjustmentsAgo: number
+  networkHashrateForBlockMined24HoursAgo: number
 }
 
 const columnCount = (width: number): number => {
@@ -164,10 +164,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   totalFeesLast24HoursInSats,
   avgFeesLast24HoursInSats,
   avgFeesLast2016BlocksInSats,
-      feesVsRewardLast24Hours,
-      feesVsRewardLast2016Blocks,
-      difficultyForHeightOfTwoDifficultyAdjustmentsAgo,
-      networkHashrateForBlockMined24HoursAgo,
+  feesVsRewardLast24Hours,
+  feesVsRewardLast2016Blocks,
+  difficultyForHeightOfTwoDifficultyAdjustmentsAgo,
+  networkHashrateForBlockMined24HoursAgo,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -232,8 +232,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               priceInCents={priceInCents}
               avgFeesLast24HoursInSats={avgFeesLast24HoursInSats}
               avgFeesLast2016BlocksInSats={avgFeesLast2016BlocksInSats}
-      feesVsRewardLast24Hours={feesVsRewardLast24Hours}
-      feesVsRewardLast2016Blocks={feesVsRewardLast2016Blocks}
+              feesVsRewardLast24Hours={feesVsRewardLast24Hours}
+              feesVsRewardLast2016Blocks={feesVsRewardLast2016Blocks}
             />
           ) : null}
         </div>
@@ -252,7 +252,9 @@ const Dashboard: React.FC<DashboardProps> = ({
             blocksUntilRetarget={blocksUntilRetarget}
             estimatedSecondsUntilRetarget={estimatedSecondsUntilRetarget}
             difficultyAtEachEpoch={difficultyAtEachEpoch}
-      difficultyForHeightOfTwoDifficultyAdjustmentsAgo={difficultyForHeightOfTwoDifficultyAdjustmentsAgo}
+            difficultyForHeightOfTwoDifficultyAdjustmentsAgo={
+              difficultyForHeightOfTwoDifficultyAdjustmentsAgo
+            }
           />
           <MiningDataSection
             screenWidth={size.width}
@@ -265,7 +267,9 @@ const Dashboard: React.FC<DashboardProps> = ({
             blocksMinedOverTheLast24HoursCount={
               blocksMinedOverTheLast24HoursCount
             }
-      networkHashrateForBlockMined24HoursAgo={networkHashrateForBlockMined24HoursAgo}
+            networkHashrateForBlockMined24HoursAgo={
+              networkHashrateForBlockMined24HoursAgo
+            }
           />
           {columnCount(size.width) == 2 ? (
             <BlockchainSection
@@ -292,8 +296,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               priceInCents={priceInCents}
               avgFeesLast24HoursInSats={avgFeesLast24HoursInSats}
               avgFeesLast2016BlocksInSats={avgFeesLast2016BlocksInSats}
-      feesVsRewardLast24Hours={feesVsRewardLast24Hours}
-      feesVsRewardLast2016Blocks={feesVsRewardLast2016Blocks}
+              feesVsRewardLast24Hours={feesVsRewardLast24Hours}
+              feesVsRewardLast2016Blocks={feesVsRewardLast2016Blocks}
             />
           </div>
         ) : null}

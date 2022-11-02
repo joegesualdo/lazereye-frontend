@@ -25,15 +25,11 @@ const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
 const fetchDashboard = async () => {
   const data = await fetch('/api/v1/dashboard')
   const json = await data.json()
-  console.log(json)
   return json
 }
 const fetchBC = async () => {
-  console.log('about to fetch block count...')
   const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockcount`)
-  console.log('blockcount: ')
   const blockcount = await data.json()
-  console.log(blockcount)
   return blockcount
 }
 const fetchPrice = async () => {
@@ -64,12 +60,10 @@ const fetchBlockchainInfo = async () => {
   return blockchainInfo
 }
 const fetchBlockStatsForHeight = async (height: number) => {
-  console.log('about to fetch block count...')
   const data = await fetch(
     `${BITCOIND_REST_API_URL}/api/v1/getblockstats?hash_or_height=${height}`
   )
   const blockstats = await data.json()
-  console.log(blockstats)
   return blockstats
 }
 const fetchNetworkHashPsForLastBlocks = async (blockCount: number) => {
@@ -149,7 +143,6 @@ const fetchDifficultyForAllEpochsInTheLastYear = async (
           finished = true
           return null
         } else {
-          console.log(`Difficulty for block ${forHeight}: ${blockDifficulty}`)
           const difficultyAtHeight = {
             height: forHeight,
             difficulty: blockDifficulty,
@@ -212,6 +205,7 @@ const fetchLast2016Blocks = async (currentBlockHeight: number) => {
       await new Promise((resolve) => setTimeout(resolve, 150 * i))
       const forHeight = currentBlockHeight - i
       const block = await fetchBlockStatsForHeight(forHeight)
+      console.log(`feching last 2016 blocks: ${((i/2016) * 100).toFixed(2)}% complete`)
       return block
     })
     .reverse()
@@ -219,10 +213,8 @@ const fetchLast2016Blocks = async (currentBlockHeight: number) => {
 }
 
 const fetchChainTxStatsForLastMonth = async () => {
-  console.log('about to fetch block count...')
   const data = await fetch('http://127.0.0.1:3030/api/v1/getchaintxstats')
   const chainTxStatsForLastMonth = await data.json()
-  console.log(chainTxStatsForLastMonth)
   return chainTxStatsForLastMonth
 }
 function App(): React.ReactElement {
@@ -365,15 +357,11 @@ function App(): React.ReactElement {
       setPriceInCents(Number(priceResponse.data.amount) * 100)
     }, 10000)
     const everyFiveSecondInterval = setInterval(async () => {
-      console.log(`inside interval: ${blockCount}`)
 
       const newBlockCount = await fetchBC()
-      console.log(`new block: ${newBlockCount}; old block: ${blockCount}`)
       if (newBlockCount !== blockCount) {
-        console.log("doesn't match")
         fetchData().catch(console.error)
       } else {
-        console.log('matches')
       }
     }, 5000)
     const everySixtySecondInterval = setInterval(async () => {
@@ -416,8 +404,6 @@ function App(): React.ReactElement {
 
   const secondsBetweenLastDifficultyBlockAndLastBlock =
     timeOfLastBlock - timeOfLastDifficultyAdjustmentBlock
-  console.log(`BOOO: ${timeOfLastBlock}`)
-  console.log(`YOOO: ${timeOfLastDifficultyAdjustmentBlock}`)
   const avgSecondsPerBlockForCurrentEpoch =
     secondsBetweenLastDifficultyBlockAndLastBlock / blocksSinceLastRetarget
   const secondsBetweenBlock2016BlocksAgoAndLastBlock =
