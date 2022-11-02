@@ -208,11 +208,8 @@ const fetchLast2016Blocks = async (currentBlockHeight: number) => {
     .fill(0)
     .map((_, i) => i)
     .map(async (i) => {
-      // We wait 100ms between each request so the bitcoind doesn't get overwhelmed and fail
-      await new Promise((resolve) => setTimeout(resolve, 100 * i))
-      console.log(`waited: ${i} seconds`)
-      console.log(`dude`)
-      console.log(`umyeah: ${i}`)
+      // We wait 150ms between each request so the bitcoind doesn't get overwhelmed and fail
+      await new Promise((resolve) => setTimeout(resolve, 150 * i))
       const forHeight = currentBlockHeight - i
       const block = await fetchBlockStatsForHeight(forHeight)
       return block
@@ -354,12 +351,11 @@ function App(): React.ReactElement {
       setDifficultyAtEachEpochInTheLastYear(difficultyAtEachEpochInTheLastYear)
 
       // TAKES A VERY LONG TIME
-      fetchLast2016Blocks(blockCount).then((last2016Blocks) => {
-        setLast2016Blocks(last2016Blocks)
-        fetchTxOutsetInfo().then((txOutsetInfo) => {
-          setTxOutsetInfo(txOutsetInfo)
-        })
-      })
+      //await new Promise((resolve) => setTimeout(resolve, 1000 * 60))
+      const last2016Blocks = await fetchLast2016Blocks(blockCount)
+      setLast2016Blocks(last2016Blocks)
+      const txOutsetInfo = await fetchTxOutsetInfo()
+      setTxOutsetInfo(txOutsetInfo)
     }
     const setCurrentTimeInterval = setInterval(async () => {
       setCurrentTime(new Date().valueOf())
