@@ -84,6 +84,7 @@ interface DashboardProps {
       feesVsRewardLast24Hours: number
       feesVsRewardLast2016Blocks: number
       difficultyForHeightOfTwoDifficultyAdjustmentsAgo: number
+      networkHashrateForBlockMined24HoursAgo: number
 }
 
 const columnCount = (width: number): number => {
@@ -166,6 +167,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       feesVsRewardLast24Hours,
       feesVsRewardLast2016Blocks,
       difficultyForHeightOfTwoDifficultyAdjustmentsAgo,
+      networkHashrateForBlockMined24HoursAgo,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -263,6 +265,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             blocksMinedOverTheLast24HoursCount={
               blocksMinedOverTheLast24HoursCount
             }
+      networkHashrateForBlockMined24HoursAgo={networkHashrateForBlockMined24HoursAgo}
           />
           {columnCount(size.width) == 2 ? (
             <BlockchainSection

@@ -246,6 +246,10 @@ function App(): React.ReactElement {
   ] = useState([])
   const [blocksMinedOverTheLast24Hours, setBlocksMinedOverTheLast24Hours] =
     useState(null)
+  const [
+    networkHashPsForBlockMined24HoursAgo,
+    setNetworkHashPsForBlockMined24HoursAgo,
+  ] = useState(null)
   const [last2016Blocks, setLast2016Blocks] = useState(null)
   const [
     blockStatsForHeightOfTwoDifficultyAjustmentsAgo,
@@ -279,6 +283,21 @@ function App(): React.ReactElement {
       const blocksMinedOverTheLast24Hours =
         await fetchBlocksMinedOverTheLast24Hours(blockCount)
       setBlocksMinedOverTheLast24Hours(blocksMinedOverTheLast24Hours)
+      const blockMined24HoursAgo = blocksMinedOverTheLast24Hours.reduce(
+        (prev, curr) => {
+          return prev.height < curr.height ? prev : curr
+        },
+        {}
+      )
+      const networkHashPsForBlockMined24HoursAgo =
+        await fetchNetworkHashPsForLast2016BlocksAtHeight(
+          blockMined24HoursAgo.height
+        )
+      const hashRateForBlockMined24HoursAgo = {
+        height: blockMined24HoursAgo.height,
+        hashrate: networkHashPsForBlockMined24HoursAgo,
+      }
+      setNetworkHashPsForBlockMined24HoursAgo(hashRateForBlockMined24HoursAgo)
 
       const difficulty = await fetchDifficulty()
       // setPrice(jsonData.price)
@@ -364,7 +383,7 @@ function App(): React.ReactElement {
     const everySixtySecondInterval = setInterval(async () => {
       const last24HourPriceHistoryResult = await fetch24HourPriceHistory()
       setLast24HourPrices(last24HourPriceHistoryResult.data.prices.reverse())
-      }, 1000 * 60)
+    }, 1000 * 60)
     fetchData()
       .then(() => {})
       .catch(console.error)
@@ -439,7 +458,14 @@ function App(): React.ReactElement {
     : null
   return (
     <Dashboard
-      difficultyForHeightOfTwoDifficultyAdjustmentsAgo={blockStatsForHeightOfTwoDifficultyAjustmentsAgo.difficulty}
+      networkHashrateForBlockMined24HoursAgo={
+        networkHashPsForBlockMined24HoursAgo
+          ? networkHashPsForBlockMined24HoursAgo.hashrate
+          : null
+      }
+      difficultyForHeightOfTwoDifficultyAdjustmentsAgo={
+        blockStatsForHeightOfTwoDifficultyAjustmentsAgo.difficulty
+      }
       feesVsRewardLast24Hours={totalFeesLast24Hours / totalSubsidyLast24Hours}
       feesVsRewardLast2016Blocks={
         totalFeesLast2016Blocks / totalSubsidyLast2016Blocks

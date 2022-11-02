@@ -24,6 +24,7 @@ interface MiningDataSectionProps {
     }
   ]
   blocksMinedOverTheLast24HoursCount: number
+  networkHashrateForBlockMined24HoursAgo: number
 }
 const MiningDataSection: React.FC<MiningDataSectionProps> = ({
   estimatedHashRateForLast2016Blocks,
@@ -31,6 +32,7 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
   screenWidth,
   hashrateForEachOfTheLast2016BlocksWithRangeof2016,
   blocksMinedOverTheLast24HoursCount,
+  networkHashrateForBlockMined24HoursAgo,
 }: MiningDataSectionProps) => {
   const leftSectionRef = useRef(null)
 
@@ -93,9 +95,15 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                             />
                           )}
                         </div>
-                        {!estimatedHashRateForLast2016Blocks ? null : (
+                        {!estimatedHashRateForLast2016Blocks ||
+                        !networkHashrateForBlockMined24HoursAgo ? null : (
                           <PercentChangeRow
-                            change={2}
+                            change={
+                              (((estimatedHashRateForLast2016Blocks -
+                                networkHashrateForBlockMined24HoursAgo) /
+                                networkHashrateForBlockMined24HoursAgo) *
+                              100).toFixed(2)
+                            }
                             text={'vs yesterday'}
                             screenWidth={screenWidth}
                           />
@@ -182,13 +190,13 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                               title="Blocks Mined Last 24 Hours"
                               screenWidth={screenWidth}
                             />
-                          {!blocksMinedOverTheLast24HoursCount ? (
-                            <CardSectionLoading />
-                          ) : (
-                            <CardSectionValue
-                              value={blocksMinedOverTheLast24HoursCount}
-                              screenWidth={screenWidth}
-                            />
+                            {!blocksMinedOverTheLast24HoursCount ? (
+                              <CardSectionLoading />
+                            ) : (
+                              <CardSectionValue
+                                value={blocksMinedOverTheLast24HoursCount}
+                                screenWidth={screenWidth}
+                              />
                             )}
                           </div>
                         </div>
