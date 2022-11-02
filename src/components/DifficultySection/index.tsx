@@ -26,6 +26,7 @@ interface DifficultySectionProps {
       difficulty: number
     }
   ]
+  difficultyForHeightOfTwoDifficultyAdjustmentsAgo: number
 }
 
 const getDateFormatForSecondsInTheFuture = (secondsInTheFuture) => {
@@ -48,6 +49,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
   // dateOfNextRetarget,
   screenWidth,
   difficultyAtEachEpoch,
+  difficultyForHeightOfTwoDifficultyAdjustmentsAgo,
 }: DifficultySectionProps) => {
   const leftSectionRef = useRef(null)
 
@@ -106,9 +108,15 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                             />
                           )}
                         </div>
-                        {!difficulty ? null : (
+                        {!difficulty ||
+                        !difficultyForHeightOfTwoDifficultyAdjustmentsAgo ? null : (
                           <PercentChangeRow
-                            change={6}
+                            change={(
+                              ((difficulty -
+                                difficultyForHeightOfTwoDifficultyAdjustmentsAgo) /
+                                difficultyForHeightOfTwoDifficultyAdjustmentsAgo) *
+                              100
+                            ).toFixed(2)}
                             text={'vs last epoch'}
                             screenWidth={screenWidth}
                           />

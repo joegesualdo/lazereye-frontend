@@ -122,6 +122,12 @@ const fetchHashrateForLast2016Blocks = async (currentHeight: number) => {
   return await Promise.all(results)
 }
 
+const fetchBlockForHeight = async (height: number) => {
+  const blockhash = await fetchBlockHashForHeight(height)
+  const block = await fetchBlockForBlockHash(blockhash)
+  return block
+}
+
 const fetchDifficultyForAllEpochsInTheLastYear = async (
   heightOfLastDifficultyAdjustment: number
 ) => {
@@ -136,8 +142,7 @@ const fetchDifficultyForAllEpochsInTheLastYear = async (
     .map(async (i) => {
       if (!finished) {
         const forHeight = heightOfLastDifficultyAdjustment - i * 2016
-        const blockhash = await fetchBlockHashForHeight(forHeight)
-        const block = await fetchBlockForBlockHash(blockhash)
+        const block = await fetchBlockForHeight(forHeight)
         const blockDifficulty = block.difficulty
         const blockTime = new Date(block.time * 1000)
         if (blockTime < oneYearAgo) {
@@ -203,8 +208,8 @@ const fetchLast2016Blocks = async (currentBlockHeight: number) => {
     .fill(0)
     .map((_, i) => i)
     .map(async (i) => {
-      // We wait 60ms between each request so the bitcoind doesn't get overwhelmed and fail
-      await new Promise((resolve) => setTimeout(resolve, 60 * i))
+      // We wait 100ms between each request so the bitcoind doesn't get overwhelmed and fail
+      await new Promise((resolve) => setTimeout(resolve, 100 * i))
       console.log(`waited: ${i} seconds`)
       console.log(`dude`)
       console.log(`umyeah: ${i}`)
@@ -242,6 +247,10 @@ function App(): React.ReactElement {
   const [blocksMinedOverTheLast24Hours, setBlocksMinedOverTheLast24Hours] =
     useState(null)
   const [last2016Blocks, setLast2016Blocks] = useState(null)
+  const [
+    blockStatsForHeightOfTwoDifficultyAjustmentsAgo,
+    setBlockStatsForHeightOfTwoDifficultyAjustmentsAgo,
+  ] = useState({})
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
@@ -299,6 +308,15 @@ function App(): React.ReactElement {
         blockStatsForHeightOfLastDifficultyAdjustment
       )
 
+      const blockStatsForHeightOfTwoDifficultyAjustmentsAgo =
+        await fetchBlockForHeight(
+          blockStatsForHeightOfLastDifficultyAdjustment.height -
+            BLOCKS_PER_DIFFICULTY_PERIOD
+        )
+      setBlockStatsForHeightOfTwoDifficultyAjustmentsAgo(
+        blockStatsForHeightOfTwoDifficultyAjustmentsAgo
+      )
+
       const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
       setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
 
@@ -343,11 +361,16 @@ function App(): React.ReactElement {
         console.log('matches')
       }
     }, 5000)
+    const everySixtySecondInterval = setInterval(async () => {
+      const last24HourPriceHistoryResult = await fetch24HourPriceHistory()
+      setLast24HourPrices(last24HourPriceHistoryResult.data.prices.reverse())
+      }, 1000 * 60)
     fetchData()
       .then(() => {})
       .catch(console.error)
     return () => {
       clearInterval(everyFiveSecondInterval)
+      clearInterval(everySixtySecondInterval)
       clearInterval(setPriceInterval)
       clearInterval(setCurrentTimeInterval)
     }
@@ -416,6 +439,7 @@ function App(): React.ReactElement {
     : null
   return (
     <Dashboard
+      difficultyForHeightOfTwoDifficultyAdjustmentsAgo={blockStatsForHeightOfTwoDifficultyAjustmentsAgo.difficulty}
       feesVsRewardLast24Hours={totalFeesLast24Hours / totalSubsidyLast24Hours}
       feesVsRewardLast2016Blocks={
         totalFeesLast2016Blocks / totalSubsidyLast2016Blocks

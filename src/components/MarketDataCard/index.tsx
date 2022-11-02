@@ -38,6 +38,15 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
   useEffect(() => {
     setHeight(leftSectionRef.current.clientHeight * 0.9)
   })
+  const oldestPriceObj = pricesLast24Hours
+    ? pricesLast24Hours.reduce((prev, curr) => {
+        return new Date(prev.time).valueOf() < new Date(curr.time).valueOf()
+          ? prev
+          : curr
+      }, {})
+    : null
+  const oldestPriceInCents = oldestPriceObj ? oldestPriceObj.price * 100 : null
+  // const minPrice = pricesLast24Hours.reduce((a, b) => Math.min((new Date(a.time)).valueOf(), (new Date(b.time).valueOf()))).price
   return (
     <Card
       isGlowing={false}
@@ -85,10 +94,13 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                           />
                         )}
                       </div>
-                      {!priceInCents ? null : (
+                      {!priceInCents || !oldestPriceInCents ? null : (
                         <PercentChangeRow
                           screenWidth={screenWidth}
-                          change={2}
+                          change={
+                            (((priceInCents - oldestPriceInCents) /
+                            oldestPriceInCents) * 100).toFixed(2)
+                          }
                           text={'vs last 24 hours'}
                         />
                       )}

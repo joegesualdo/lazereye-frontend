@@ -83,6 +83,7 @@ interface DashboardProps {
   avgFeesLast2016BlocksInSats: number
       feesVsRewardLast24Hours: number
       feesVsRewardLast2016Blocks: number
+      difficultyForHeightOfTwoDifficultyAdjustmentsAgo: number
 }
 
 const columnCount = (width: number): number => {
@@ -164,6 +165,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   avgFeesLast2016BlocksInSats,
       feesVsRewardLast24Hours,
       feesVsRewardLast2016Blocks,
+      difficultyForHeightOfTwoDifficultyAdjustmentsAgo,
 }: DashboardProps) => {
   const size: Size = useWindowSize()
   return (
@@ -248,6 +250,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             blocksUntilRetarget={blocksUntilRetarget}
             estimatedSecondsUntilRetarget={estimatedSecondsUntilRetarget}
             difficultyAtEachEpoch={difficultyAtEachEpoch}
+      difficultyForHeightOfTwoDifficultyAdjustmentsAgo={difficultyForHeightOfTwoDifficultyAdjustmentsAgo}
           />
           <MiningDataSection
             screenWidth={size.width}

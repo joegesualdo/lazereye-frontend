@@ -33,6 +33,7 @@ const PercentChangeRow: React.FC<PercentChangeRowProps> = ({
     }
   }
   const fontSize = getFontSize(screenWidth)
+  const color = change < 1 ? "#FF496A" : "#14F195"
   return (
     <div
       className={css({
@@ -46,7 +47,7 @@ const PercentChangeRow: React.FC<PercentChangeRowProps> = ({
           display: 'flex',
           alignItems: 'center',
           backgroundColor: '#2C2D30',
-          color: '#14F195',
+          color,
           borderRadius: 50,
           paddingTop: 3,
           paddingBottom: 3,
@@ -55,7 +56,9 @@ const PercentChangeRow: React.FC<PercentChangeRowProps> = ({
         })}
       >
         <span className={css({ paddingRight: 5 })}>
-          <div className={css({ width: fontSize - 2, marginTop: -4 })}>
+          <div className={css({ width: fontSize - 2, marginTop: -4, 
+transform: `rotate(${change < 1 ? "90" : "0"}deg)`
+          })}>
             <svg
               width="100%"
               height="auto"
@@ -65,7 +68,7 @@ const PercentChangeRow: React.FC<PercentChangeRowProps> = ({
             >
               <path
                 d="M8.13583 2.77175L1.148 9.75959L0 8.6116L6.98703 1.62376H0.828928V0H9.75959V8.93066H8.13583V2.77175Z"
-                fill="#14F195"
+                fill={color}
               />
             </svg>
           </div>
