@@ -27,6 +27,7 @@ const fetchDashboard = async () => {
   const json = await data.json()
   return json
 }
+
 const fetchBC = async () => {
   const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockcount`)
   const blockcount = await data.json()
@@ -205,7 +206,9 @@ const fetchLast2016Blocks = async (currentBlockHeight: number) => {
       await new Promise((resolve) => setTimeout(resolve, 150 * i))
       const forHeight = currentBlockHeight - i
       const block = await fetchBlockStatsForHeight(forHeight)
-      console.log(`feching last 2016 blocks: ${((i/2016) * 100).toFixed(2)}% complete`)
+      console.log(
+        `feching last 2016 blocks: ${((i / 2016) * 100).toFixed(2)}% complete`
+      )
       return block
     })
     .reverse()
@@ -357,7 +360,6 @@ function App(): React.ReactElement {
       setPriceInCents(Number(priceResponse.data.amount) * 100)
     }, 10000)
     const everyFiveSecondInterval = setInterval(async () => {
-
       const newBlockCount = await fetchBC()
       if (newBlockCount !== blockCount) {
         fetchData().catch(console.error)

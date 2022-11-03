@@ -120,32 +120,58 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
               {pricesLast24Hours.length == 0 ? (
                 <LoadingAnimation />
               ) : (
-                <LazereyeChart
-                  // data={Array.from('x'.repeat(15)).map(() => ({
-                  //   label: '2039',
-                  //   data: 20000,
-                  // }))}
-                  data={pricesLast24Hours.map((d) => ({
-                    x: new Date(d.time).valueOf(),
-                    y: Number(d.price),
-                  }))}
-                  formatTitle={(title) => {
-                    const date = new Date(Number(title))
-                    const dateString = date.toLocaleDateString('en-us', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })
-                    const timeString = date.toLocaleTimeString('en-us', {
-                      hour: 'numeric',
-                      minute: 'numeric',
-                    })
-                    return `${dateString}, ${timeString}`
-                  }}
-                  formatBody={(body) => {
-                    return `$${body}`
-                  }}
-                />
+                <div
+                  className={css({
+                    height: '100%',
+                    width: '100%',
+                    position: 'relative',
+                  })}
+                >
+                  <div
+                    className={css({
+                      position: 'absolute',
+                      backgroundColor: '#2C2D30',
+                      fontColor: '#ABABAC',
+                      paddingLeft: 14,
+                      paddingRight: 14,
+                      borderRadius: 5,
+                      top: -5,
+                      left: 10,
+                      textTransform: 'uppercase',
+                      fontWeight: 'bold',
+                      fontFamily: 'poppins, sans-serif',
+                      fontSize: 10,
+                    })}
+                  >
+                    24 h
+                  </div>
+                  <LazereyeChart
+                    // data={Array.from('x'.repeat(15)).map(() => ({
+                    //   label: '2039',
+                    //   data: 20000,
+                    // }))}
+                    data={pricesLast24Hours.map((d) => ({
+                      x: new Date(d.time).valueOf(),
+                      y: Number(d.price),
+                    }))}
+                    formatTitle={(title) => {
+                      const date = new Date(Number(title))
+                      const dateString = date.toLocaleDateString('en-us', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })
+                      const timeString = date.toLocaleTimeString('en-us', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                      })
+                      return `${dateString}, ${timeString}`
+                    }}
+                    formatBody={(body) => {
+                      return `$${body}`
+                    }}
+                  />
+                </div>
               )}
             </div>
           </div>
