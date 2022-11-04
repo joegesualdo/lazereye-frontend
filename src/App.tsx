@@ -20,7 +20,8 @@ const appStyles = {
   paddingRight: 20,
 }
 
-const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
+// const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
+const BITCOIND_REST_API_URL = 'http://bitcoin.haltoshi.com:3030'
 
 const fetchDashboard = async () => {
   const data = await fetch('/api/v1/dashboard')
@@ -216,7 +217,7 @@ const fetchLast2016Blocks = async (currentBlockHeight: number) => {
 }
 
 const fetchChainTxStatsForLastMonth = async () => {
-  const data = await fetch('http://127.0.0.1:3030/api/v1/getchaintxstats')
+  const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getchaintxstats`)
   const chainTxStatsForLastMonth = await data.json()
   return chainTxStatsForLastMonth
 }
