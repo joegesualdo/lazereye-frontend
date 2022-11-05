@@ -58,6 +58,9 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
   useEffect(() => {
     setHeight(leftSectionRef.current.clientHeight * 0.9)
   })
+  const daysUntilRetarget = estimatedSecondsUntilRetarget
+    ? (estimatedSecondsUntilRetarget / (60 * 60 * 24)).toFixed(0)
+    : null
   return (
     <div
       className={css({
@@ -289,15 +292,12 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           title="Days Until Next Retarget"
                           screenWidth={screenWidth}
                         />
-                        {!estimatedSecondsUntilRetarget ? (
+                        {!daysUntilRetarget ? (
                           <CardSectionLoading />
                         ) : (
                           <CardSectionValue
-                            value={(
-                              estimatedSecondsUntilRetarget /
-                              (60 * 60 * 24)
-                            ).toFixed(0)}
-                            postfix="days"
+                            value={daysUntilRetarget}
+                            postfix={daysUntilRetarget > 1 ? 'days' : 'day'}
                             screenWidth={screenWidth}
                           />
                         )}
