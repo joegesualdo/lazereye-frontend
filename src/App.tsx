@@ -20,8 +20,8 @@ const appStyles = {
   paddingRight: 20,
 }
 
-// const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
-const BITCOIND_REST_API_URL = 'http://bitcoin.haltoshi.com:3030'
+const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
+const BITCOIND_REST_API_CACHE_URL = 'http://127.0.0.1:3032'
 
 const fetchDashboard = async () => {
   const data = await fetch('/api/v1/dashboard')
@@ -55,6 +55,13 @@ const fetchTxOutsetInfo = async () => {
   const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/gettxoutsetinfo`)
   const txOutsetInfo = await data.json()
   return txOutsetInfo
+}
+const fetchTxOutsetInfoFromCache = async () => {
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/gettxoutsetinfo`
+  )
+  const txOutsetInfoFromCacheResponse = await data.json()
+  return txOutsetInfoFromCacheResponse.response
 }
 const fetchBlockchainInfo = async () => {
   const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockchaininfo`)
@@ -262,17 +269,26 @@ function App(): React.ReactElement {
   const [chainTxStatsForLastMonth, setChainTxStatsForLastMonth] = useState({})
   useEffect(() => {
     const fetchData = async () => {
+      const blockCount = await fetchBC()
+      setBlockCount(blockCount)
       const priceResponse = await fetchPrice()
       setPriceInCents(Number(priceResponse.data.amount) * 100)
+      const txOutsetInfo = await fetchTxOutsetInfoFromCache()
+      setTxOutsetInfo(txOutsetInfo)
+      const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
+      setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
+      const blockStatsForCurrentHeight = await fetchBlockStatsForHeight(
+        blockCount
+      )
+      setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
+      const difficulty = await fetchDifficulty()
+      // setPrice(jsonData.price)
+      setDifficulty(difficulty)
+      const blockchainInfo = await fetchBlockchainInfo()
+      setBlockchainInfo(blockchainInfo)
+
       const last24HourPriceHistoryResult = await fetch24HourPriceHistory()
       setLast24HourPrices(last24HourPriceHistoryResult.data.prices.reverse())
-      // const jsonData = await fetchDashboard()
-      // setPriceInCents(2006500)
-      // setBlockHeight(jsonData.block_count)
-      //
-      const blockCount = await fetchBC()
-      // setPrice(jsonData.price)
-      setBlockCount(blockCount)
       const blocksMinedOverTheLast24Hours =
         await fetchBlocksMinedOverTheLast24Hours(blockCount)
       setBlocksMinedOverTheLast24Hours(blocksMinedOverTheLast24Hours)
@@ -292,16 +308,6 @@ function App(): React.ReactElement {
       }
       setNetworkHashPsForBlockMined24HoursAgo(hashRateForBlockMined24HoursAgo)
 
-      const difficulty = await fetchDifficulty()
-      // setPrice(jsonData.price)
-      setDifficulty(difficulty)
-
-      const blockchainInfo = await fetchBlockchainInfo()
-      setBlockchainInfo(blockchainInfo)
-      const blockStatsForCurrentHeight = await fetchBlockStatsForHeight(
-        blockCount
-      )
-      setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
       const blockStatsForBlock2016BlocksAgo = await fetchBlockStatsForHeight(
         blockCount - 2016
       )
@@ -329,9 +335,6 @@ function App(): React.ReactElement {
         blockStatsForHeightOfTwoDifficultyAjustmentsAgo
       )
 
-      const chainTxStatsForLastMonth = await fetchChainTxStatsForLastMonth()
-      setChainTxStatsForLastMonth(chainTxStatsForLastMonth)
-
       const networkHashPsForLastEachOfTheLast2016Blocks =
         await fetchHashrateForLast2016Blocks(blockCount)
 
@@ -348,10 +351,8 @@ function App(): React.ReactElement {
 
       // TAKES A VERY LONG TIME
       //await new Promise((resolve) => setTimeout(resolve, 1000 * 60))
-      const last2016Blocks = await fetchLast2016Blocks(blockCount)
-      setLast2016Blocks(last2016Blocks)
-      const txOutsetInfo = await fetchTxOutsetInfo()
-      setTxOutsetInfo(txOutsetInfo)
+      // const last2016Blocks = await fetchLast2016Blocks(blockCount)
+      // setLast2016Blocks(last2016Blocks)
     }
     const setCurrentTimeInterval = setInterval(async () => {
       setCurrentTime(new Date().valueOf())
