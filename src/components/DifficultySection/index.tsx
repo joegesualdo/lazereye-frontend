@@ -297,7 +297,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                         ) : (
                           <CardSectionValue
                             value={daysUntilRetarget}
-                            postfix={daysUntilRetarget > 1 ? 'days' : 'day'}
+                            postfix={daysUntilRetarget === 1 ? 'day' : 'days'}
                             screenWidth={screenWidth}
                           />
                         )}
@@ -334,9 +334,13 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                           <CardSectionLoading />
                         ) : (
                           <CardSectionValue
-                            postfix={getDateFormatForSecondsInTheFuture(
-                              estimatedSecondsUntilRetarget
-                            )}
+                            postfix={
+                              daysUntilRetarget == 0
+                                ? 'Today'
+                                : getDateFormatForSecondsInTheFuture(
+                                    estimatedSecondsUntilRetarget
+                                  )
+                            }
                             screenWidth={screenWidth}
                           />
                         )}

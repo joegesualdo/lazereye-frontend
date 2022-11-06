@@ -205,22 +205,29 @@ const fetchBlocksMinedOverTheLast24Hours = async (
     return !isNull
   })
 }
-const fetchLast2016Blocks = async (currentBlockHeight: number) => {
-  const results = Array(2016)
-    .fill(0)
-    .map((_, i) => i)
-    .map(async (i) => {
-      // We wait 150ms between each request so the bitcoind doesn't get overwhelmed and fail
-      await new Promise((resolve) => setTimeout(resolve, 150 * i))
-      const forHeight = currentBlockHeight - i
-      const block = await fetchBlockStatsForHeight(forHeight)
-      console.log(
-        `feching last 2016 blocks: ${((i / 2016) * 100).toFixed(2)}% complete`
-      )
-      return block
-    })
-    .reverse()
-  return await Promise.all(results)
+// const fetchLast2016Blocks = async (currentBlockHeight: number) => {
+//   const results = Array(2016)
+//     .fill(0)
+//     .map((_, i) => i)
+//     .map(async (i) => {
+//       // We wait 150ms between each request so the bitcoind doesn't get overwhelmed and fail
+//       await new Promise((resolve) => setTimeout(resolve, 150 * i))
+//       const forHeight = currentBlockHeight - i
+//       const block = await fetchBlockStatsForHeight(forHeight)
+//       console.log(
+//         `feching last 2016 blocks: ${((i / 2016) * 100).toFixed(2)}% complete`
+//       )
+//       return block
+//     })
+//     .reverse()
+//   return await Promise.all(results)
+// }
+const fetchLast2016BlocksFromCache = async () => {
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/blockstatsforlast2016blocks`
+  )
+  const blockstatsforlast2016blocksFromCache = await data.json()
+  return blockstatsforlast2016blocksFromCache.response
 }
 
 const fetchChainTxStatsForLastMonth = async () => {
@@ -287,6 +294,9 @@ function App(): React.ReactElement {
       const blockchainInfo = await fetchBlockchainInfo()
       setBlockchainInfo(blockchainInfo)
 
+      const last2016Blocks = await fetchLast2016BlocksFromCache(blockCount)
+      setLast2016Blocks(last2016Blocks)
+
       const last24HourPriceHistoryResult = await fetch24HourPriceHistory()
       setLast24HourPrices(last24HourPriceHistoryResult.data.prices.reverse())
       const blocksMinedOverTheLast24Hours =
@@ -348,11 +358,6 @@ function App(): React.ReactElement {
       const difficultyAtEachEpochInTheLastYear =
         await fetchDifficultyForAllEpochsInTheLastYear(blockCount)
       setDifficultyAtEachEpochInTheLastYear(difficultyAtEachEpochInTheLastYear)
-
-      // TAKES A VERY LONG TIME
-      //await new Promise((resolve) => setTimeout(resolve, 1000 * 60))
-      // const last2016Blocks = await fetchLast2016Blocks(blockCount)
-      // setLast2016Blocks(last2016Blocks)
     }
     const setCurrentTimeInterval = setInterval(async () => {
       setCurrentTime(new Date().valueOf())
