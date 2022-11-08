@@ -254,20 +254,40 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
     }
     var ctx = chart.ctx
 
-    var gradient = ctx.createLinearGradient(0, 0, 0, 300)
-    //red
-    //gradient.addColorStop(0, 'rgba(255, 45, 85, 1)')
-    //green
-    gradient.addColorStop(0, 'rgba(20, 241, 149, 1)')
-    gradient.addColorStop(1, 'rgba(53, 54, 58,0)')
     if (data.length > 0) {
+      const oldestPriceObj = data.reduce((prev, curr) => {
+        return new Date(prev.x).valueOf() < new Date(curr.x).valueOf()
+          ? prev
+          : curr
+      }, {})
+      const newestPriceObj = data.reduce((prev, curr) => {
+        return new Date(prev.x).valueOf() > new Date(curr.x).valueOf()
+          ? prev
+          : curr
+      }, {})
+      var gradient = ctx.createLinearGradient(0, 0, 0, 300)
+      //red
+      //gradient.addColorStop(0, 'rgba(255, 45, 85, 1)')
+      //green
+      const isDecliningChart = oldestPriceObj.y > newestPriceObj.y
+      if (isDecliningChart) {
+        gradient.addColorStop(0, 'rgb(255, 73, 106, 1')
+        gradient.addColorStop(1, 'rgb(255, 73, 106, 0')
+      } else {
+        gradient.addColorStop(0, 'rgba(20, 241, 149, 1)')
+        gradient.addColorStop(1, 'rgba(53, 54, 58,0)')
+      }
+
+      const oldestPriceInCents = oldestPriceObj
+        ? oldestPriceObj.price * 100
+        : null
       setChartData({
         labels: data.map((d) => String(d.x)),
         datasets: [
           {
             // data: data.map(() => faker.datatype.number({ min: 0, max: 19000 })),
             data: data.map((d) => d.y),
-            borderColor: '#14F195',
+            borderColor: isDecliningChart ? '#FF496A' : '#14F195',
             borderWidth: 1,
             lineTension: 0.3,
             fill: {
