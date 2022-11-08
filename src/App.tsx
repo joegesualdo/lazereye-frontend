@@ -29,6 +29,13 @@ const fetchBC = async () => {
   const blockcount = await data.json()
   return blockcount
 }
+const fetchBlockcountFromCache = async () => {
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/getblockcount`
+  )
+  const blockcountFromCacheResponse = await data.json()
+  return blockcountFromCacheResponse.response
+}
 
 // const fetchPrice = async () => {
 //   const data = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot')
@@ -312,7 +319,7 @@ function App(): React.ReactElement {
   const [chainTxStatsForLastMonth, setChainTxStatsForLastMonth] = useState({})
   useEffect(() => {
     const fetchData = async () => {
-      const blockCount = await fetchBC()
+      const blockCount = await fetchBlockcountFromCache()
       setBlockCount(blockCount)
       const priceResponse = await fetchPriceFromCache()
       setPriceInCents(Number(priceResponse.response) * 100)
@@ -332,6 +339,11 @@ function App(): React.ReactElement {
 
       const last2016Blocks = await fetchLast2016BlocksFromCache(blockCount)
       setLast2016Blocks(last2016Blocks)
+
+      const blockStatsForCurrentHeight = await fetchBlockStatsForHeight(
+        blockCount
+      )
+      setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
 
       const getBlocksMindedOverTheLast24Hours = (last2016Blocks) => {
         const twentyFourHoursAgo = new Date(
@@ -369,10 +381,6 @@ function App(): React.ReactElement {
         )
       setDifficultyAtEachEpochInTheLastYear(difficultyAtEachEpochInTheLastYear)
 
-      const blockStatsForCurrentHeight = await fetchBlockStatsForHeight(
-        blockCount
-      )
-      setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
       const blockchainInfo = await fetchBlockchainInfoFromCache()
       setBlockchainInfo(blockchainInfo)
 
@@ -442,7 +450,9 @@ function App(): React.ReactElement {
     }, 1000)
     const everyFiveSecondInterval = setInterval(async () => {
       const newBlockCount = await fetchBC()
-      if (newBlockCount !== blockCount) {
+      const newBlockCountFromCache = await fetchBlockcountFromCache()
+      if (newBlockCountFromCache !== blockCount) {
+        // Some of the long running caches updates won't be finished by this time. So those will be reflected until the next block, when this runs again.
         fetchData().catch(console.error)
       } else {
       }
