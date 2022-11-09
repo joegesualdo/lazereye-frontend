@@ -29,9 +29,25 @@ const fetchBC = async () => {
   const blockcount = await data.json()
   return blockcount
 }
+const fetchBlockStatsForHeightOfLastDifficultyAdjustmentsFromCache =
+  async () => {
+    const data = await fetch(
+      `${BITCOIND_REST_API_CACHE_URL}/api/v1/blockstatsforheightoflastdifficultyadjustments`
+    )
+    const blockcountFromCacheResponse = await data.json()
+    return blockcountFromCacheResponse.response
+  }
+
 const fetchBlockcountFromCache = async () => {
   const data = await fetch(
     `${BITCOIND_REST_API_CACHE_URL}/api/v1/getblockcount`
+  )
+  const blockcountFromCacheResponse = await data.json()
+  return blockcountFromCacheResponse.response
+}
+const fetchBlockStatsForCurrentHeightFromCache = async () => {
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/blockstatsforcurrentheight`
   )
   const blockcountFromCacheResponse = await data.json()
   return blockcountFromCacheResponse.response
@@ -104,13 +120,22 @@ const fetchBlockStatsForHeight = async (height: number) => {
   const blockstats = await data.json()
   return blockstats
 }
-const fetchNetworkHashPsForLastBlocks = async (blockCount: number) => {
+const fetchNetworkHashPsForLast2016Blocks = async () => {
   const data = await fetch(
-    `${BITCOIND_REST_API_URL}/api/v1/getnetworkhashps?n_blocks=${blockCount}`
+    `${BITCOIND_REST_API_URL}/api/v1/getnetworkhashps?n_blocks=2016`
   )
   const networkHashPs = await data.json()
   return networkHashPs
 }
+
+const fetchNetworkHashPsForLast2016BlocksFromCache = async () => {
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/getnetworkhashpsforlast2016blocks`
+  )
+  const getBlockChainInfoCacheResponse = await data.json()
+  return getBlockChainInfoCacheResponse.response
+}
+
 const fetchNetworkHashPsForLast2016BlocksAtHeight = async (height: number) => {
   const data = await fetch(
     `${BITCOIND_REST_API_URL}/api/v1/getnetworkhashps?n_blocks=2016&height=${height}`
@@ -118,6 +143,7 @@ const fetchNetworkHashPsForLast2016BlocksAtHeight = async (height: number) => {
   const networkHashPs = await data.json()
   return networkHashPs
 }
+
 const fetchBlockHashForHeight = async (height: number) => {
   const data = await fetch(
     `${BITCOIND_REST_API_URL}/api/v1/getblockhash?height=${height}`
@@ -152,6 +178,22 @@ const fetchHashrateForLast2016Blocks = async (currentHeight: number) => {
     })
     .reverse()
   return await Promise.all(results)
+}
+
+const fetchBlockForHeightTwoDifficultyAdjustmentsAgoFromCache = async () => {
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/blockforheighttwodifficultyadjustmentsago`
+  )
+  const a = await data.json()
+  return a.response
+}
+
+const fetchNetworkHashPSForEachOfTheLast2016BlocksFromCache = async () => {
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/networkhashpsforeachofthelast2016blocks`
+  )
+  const a = await data.json()
+  return a.response
 }
 
 const fetchBlockForHeight = async (height: number) => {
@@ -234,24 +276,24 @@ const fetchBlocksMinedOverTheLast24Hours = async (
     return !isNull
   })
 }
-// const fetchLast2016Blocks = async (currentBlockHeight: number) => {
-//   const results = Array(2016)
-//     .fill(0)
-//     .map((_, i) => i)
-//     .map(async (i) => {
-//       // We wait 150ms between each request so the bitcoind doesn't get overwhelmed and fail
-//       await new Promise((resolve) => setTimeout(resolve, 150 * i))
-//       const forHeight = currentBlockHeight - i
-//       const block = await fetchBlockStatsForHeight(forHeight)
-//       console.log(
-//         `feching last 2016 blocks: ${((i / 2016) * 100).toFixed(2)}% complete`
-//       )
-//       return block
-//     })
-//     .reverse()
-//   return await Promise.all(results)
-// }
-const fetchLast2016BlocksFromCache = async () => {
+const fetchLast2016Blocks = async (currentBlockHeight: number) => {
+  const results = Array(2016)
+    .fill(0)
+    .map((_, i) => i)
+    .map(async (i) => {
+      // We wait 150ms between each request so the bitcoind doesn't get overwhelmed and fail
+      await new Promise((resolve) => setTimeout(resolve, 150 * i))
+      const forHeight = currentBlockHeight - i
+      const block = await fetchBlockStatsForHeight(forHeight)
+      console.log(
+        `feching last 2016 blocks: ${((i / 2016) * 100).toFixed(2)}% complete`
+      )
+      return block
+    })
+    .reverse()
+  return await Promise.all(results)
+}
+const fetchLast2016BlockStatsFromCache = async () => {
   const data = await fetch(
     `${BITCOIND_REST_API_CACHE_URL}/api/v1/blockstatsforlast2016blocks`
   )
@@ -299,7 +341,7 @@ function App(): React.ReactElement {
   const [
     networkHashPsForBlockMined24HoursAgo,
     setNetworkHashPsForBlockMined24HoursAgo,
-  ] = useState(null)
+  ] = useState({})
   const [last2016Blocks, setLast2016Blocks] = useState(null)
   const [
     blockStatsForHeightOfTwoDifficultyAjustmentsAgo,
@@ -308,8 +350,6 @@ function App(): React.ReactElement {
   const [blockStatsForCurrentHeight, setBlockStatsForCurrentHeight] = useState(
     {}
   )
-  const [blockStatsForBlock2016BlocksAgo, setBlockStatsForBlock2016BlocksAgo] =
-    useState({})
   const [blockchainInfo, setBlockchainInfo] = useState({})
   const [txOutsetInfo, setTxOutsetInfo] = useState({})
   const [
@@ -337,12 +377,21 @@ function App(): React.ReactElement {
       // setPrice(jsonData.price)
       setDifficulty(difficulty)
 
-      const last2016Blocks = await fetchLast2016BlocksFromCache(blockCount)
+      const last2016Blocks = await fetchLast2016BlockStatsFromCache()
       setLast2016Blocks(last2016Blocks)
 
-      const blockStatsForCurrentHeight = await fetchBlockStatsForHeight(
-        blockCount
+      const networkHashPsForLast2016Blocks =
+        await fetchNetworkHashPsForLast2016BlocksFromCache()
+      setNetworkHashPsForLast2016Blocks(networkHashPsForLast2016Blocks)
+
+      const blockStatsForHeightOfTwoDifficultyAjustmentsAgo =
+        await fetchBlockForHeightTwoDifficultyAdjustmentsAgoFromCache()
+      setBlockStatsForHeightOfTwoDifficultyAjustmentsAgo(
+        blockStatsForHeightOfTwoDifficultyAjustmentsAgo
       )
+
+      const blockStatsForCurrentHeight =
+        await fetchBlockStatsForCurrentHeightFromCache()
       setBlockStatsForCurrentHeight(blockStatsForCurrentHeight)
 
       const getBlocksMindedOverTheLast24Hours = (last2016Blocks) => {
@@ -384,26 +433,38 @@ function App(): React.ReactElement {
       const blockchainInfo = await fetchBlockchainInfoFromCache()
       setBlockchainInfo(blockchainInfo)
 
+      const networkHashPsForLastEachOfTheLast2016Blocks =
+        await fetchNetworkHashPSForEachOfTheLast2016BlocksFromCache()
+
+      setNetworkHashPsForLastEachOfTheLast2016Blocks(
+        networkHashPsForLastEachOfTheLast2016Blocks
+      )
+
       const blockMined24HoursAgo = blocksMinedOverTheLast24Hours.reduce(
         (prev, curr) => {
           return prev.height < curr.height ? prev : curr
         },
         {}
       )
+
       const networkHashPsForBlockMined24HoursAgo =
-        await fetchNetworkHashPsForLast2016BlocksAtHeight(
-          blockMined24HoursAgo.height
-        )
+        networkHashPsForLastEachOfTheLast2016Blocks.find(
+          (h) => h.height === blockMined24HoursAgo.height
+        ).hashrate
+      // const networkHashPsForBlockMined24HoursAgo =
+      //   await fetchNetworkHashPsForLast2016BlocksAtHeight(
+      //     blockMined24HoursAgo.height
+      //   )
       const hashRateForBlockMined24HoursAgo = {
         height: blockMined24HoursAgo.height,
         hashrate: networkHashPsForBlockMined24HoursAgo,
       }
       setNetworkHashPsForBlockMined24HoursAgo(hashRateForBlockMined24HoursAgo)
 
-      const blockStatsForBlock2016BlocksAgo = await fetchBlockStatsForHeight(
-        blockCount - 2016
-      )
-      setBlockStatsForBlock2016BlocksAgo(blockStatsForBlock2016BlocksAgo)
+      // const blockStatsForBlock2016BlocksAgo = await fetchBlockStatsForHeight(
+      //   blockCount - 2016
+      // )
+      //setBlockStatsForBlock2016BlocksAgo(blockStatsForBlock2016BlocksAgo)
       const currentDifficultyEpoch = blockCount
         ? (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD).toFixed(0)
         : undefined
@@ -411,31 +472,12 @@ function App(): React.ReactElement {
       const block_height_of_last_difficulty_adjustment =
         (currentDifficultyEpoch - 1) * 2016
       const blockStatsForHeightOfLastDifficultyAdjustment =
-        await fetchBlockStatsForHeight(
-          block_height_of_last_difficulty_adjustment
-        )
+        await fetchBlockStatsForHeightOfLastDifficultyAdjustmentsFromCache()
       setBlockStatsForHeightOfLastDifficultyAdjustment(
         blockStatsForHeightOfLastDifficultyAdjustment
       )
 
-      const blockStatsForHeightOfTwoDifficultyAjustmentsAgo =
-        await fetchBlockForHeight(
-          blockStatsForHeightOfLastDifficultyAdjustment.height -
-            BLOCKS_PER_DIFFICULTY_PERIOD
-        )
-      setBlockStatsForHeightOfTwoDifficultyAjustmentsAgo(
-        blockStatsForHeightOfTwoDifficultyAjustmentsAgo
-      )
-
-      const networkHashPsForLastEachOfTheLast2016Blocks =
-        await fetchHashrateForLast2016Blocks(blockCount)
-
-      setNetworkHashPsForLastEachOfTheLast2016Blocks(
-        networkHashPsForLastEachOfTheLast2016Blocks
-      )
-      const networkHashPsForLast2016Blocks =
-        await fetchNetworkHashPsForLastBlocks(2016)
-      setNetworkHashPsForLast2016Blocks(networkHashPsForLast2016Blocks)
+      // HERE
 
       // const difficultyAtEachEpochInTheLastYear =
       //   await fetchDifficultyForAllEpochsInTheLastYear(blockCount)
@@ -449,7 +491,7 @@ function App(): React.ReactElement {
       setPriceInCents(Number(priceResponse.response) * 100)
     }, 1000)
     const everyFiveSecondInterval = setInterval(async () => {
-      const newBlockCount = await fetchBC()
+      // const newBlockCount = await fetchBC()
       const newBlockCountFromCache = await fetchBlockcountFromCache()
       if (newBlockCountFromCache !== blockCount) {
         // Some of the long running caches updates won't be finished by this time. So those will be reflected until the next block, when this runs again.
@@ -476,10 +518,19 @@ function App(): React.ReactElement {
     ? (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD).toFixed(0)
     : undefined
 
+  const blockStatsForBlock2016BlocksAgo = last2016Blocks
+    ? last2016Blocks.reduce((prev, curr) => {
+        return prev.height < curr.height ? prev : curr
+      }, {})
+    : null
+
   const timeOfLastBlock = blockStatsForCurrentHeight.time
   const timeOfLastDifficultyAdjustmentBlock =
     blockStatsForHeightOfLastDifficultyAdjustment.time
-  const timeOfBlock2016BlocksAgo = blockStatsForBlock2016BlocksAgo.time
+  // TODO: The 0 default makes no sense here
+  const timeOfBlock2016BlocksAgo = blockStatsForBlock2016BlocksAgo
+    ? blockStatsForBlock2016BlocksAgo.time
+    : 0
   const percent_of_epoch_complete =
     (blockCount / BLOCKS_PER_DIFFICULTY_PERIOD) % 1.0
   const percent_of_epoch_to_go = 1.0 - percent_of_epoch_complete
