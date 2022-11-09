@@ -31,13 +31,17 @@ ChartJS.register(
 
 interface LazereyeChartProps {
   data: [{ x: number; y: number }]
+  height: number
   formatTitle: (title: string) => string
   formatBody: (body: string) => string
+  rangeLabelText: string
 }
 const LazereyeChart: React.FC<LazereyeChart> = ({
   data,
   formatTitle,
   formatBody,
+  height,
+  rangeLabelText,
 }: LazereyeChartProps) => {
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipData, setTooltipData] = useState(null)
@@ -211,13 +215,14 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
       //     chart.update()
       //   }
       // },
+      // TODO: Uncomment THis to turn tooltip back on.
       // Makes it so tooltip shows up only on x axis when hovering anywhere on the chart
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-        enabled: false,
-        external: customTooltip,
-      },
+      // tooltip: {
+      //   mode: 'index',
+      //   intersect: false,
+      //   enabled: false,
+      //   external: customTooltip,
+      // },
       hover: { mode: null },
       legend: {
         display: false,
@@ -301,35 +306,76 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
       })
     }
   }, [data])
+  const heightOfLabel = 15
+  const heightOfFont = heightOfLabel - 6
   return chartData ? (
-    <Line
-      height="100% !important"
-      width="auto !important"
-      ref={chartRef}
-      options={options}
-      data={chartData}
-      plugins={[
-        {
-          afterDraw: (chart) => {
-            // Add vertical line: https://stackoverflow.com/questions/72998998/how-to-make-vertical-line-when-hovering-cursor-chart-js
-            if (chart.tooltip?._active?.length) {
-              let x = chart.tooltip._active[0].element.x
-              let yAxis = chart.scales.y
-              let ctx = chart.ctx
-              ctx.save()
-              ctx.beginPath()
-              ctx.setLineDash([5, 5])
-              ctx.moveTo(x, yAxis.top)
-              ctx.lineTo(x, yAxis.bottom)
-              ctx.lineWidth = 1
-              ctx.strokeStyle = 'rgb(171, 171, 172)'
-              ctx.stroke()
-              ctx.restore()
-            }
-          },
-        },
-      ]}
-    />
+    <div className={css({ height: height })}>
+      <div className={css({ height: heightOfLabel })}>
+        <div
+          className={css({
+            height: heightOfLabel,
+            lineHeight: `${heightOfLabel}px`,
+            fontSize: heightOfFont,
+          })}
+        >
+          <div
+            className={css({
+              width: 'fit-content',
+              height: heightOfLabel,
+              paddingLeft: 10,
+              paddingRight: 10,
+              backgroundColor: '#2C2D30',
+              //lineHeight: '20px',
+              height: '100%',
+              fontSize: heightOfFont,
+              color: '#ABABAC',
+              lineHeight: `${heightOfLabel}px`,
+              fontWeight: 900,
+              textTransform: 'uppercase',
+              fontWeight: 'bold',
+              //fontFamily: "'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'",
+              // fontFamily: "'Inter var', sans-serif",
+              //fontFamily: 'poppins, sans-serif',
+              fontFamily:
+                "'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'",
+            })}
+          >
+            {rangeLabelText}
+          </div>
+        </div>
+      </div>
+      <div className={css({ height: height - heightOfLabel })}>
+        <Line
+          width="100% !important"
+          //height={height -100}
+          width="auto !important"
+          ref={chartRef}
+          options={options}
+          data={chartData}
+          plugins={[
+            {
+              afterDraw: (chart) => {
+                // Add vertical line: https://stackoverflow.com/questions/72998998/how-to-make-vertical-line-when-hovering-cursor-chart-js
+                if (chart.tooltip?._active?.length) {
+                  let x = chart.tooltip._active[0].element.x
+                  let yAxis = chart.scales.y
+                  let ctx = chart.ctx
+                  ctx.save()
+                  ctx.beginPath()
+                  ctx.setLineDash([5, 5])
+                  ctx.moveTo(x, yAxis.top)
+                  ctx.lineTo(x, yAxis.bottom)
+                  ctx.lineWidth = 1
+                  ctx.strokeStyle = 'rgb(171, 171, 172)'
+                  ctx.stroke()
+                  ctx.restore()
+                }
+              },
+            },
+          ]}
+        />
+      </div>
+    </div>
   ) : null
 }
 LazereyeChart.defaultProps = {

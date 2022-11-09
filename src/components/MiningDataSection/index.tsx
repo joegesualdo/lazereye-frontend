@@ -39,7 +39,7 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
   const [leftSectionHeight, setHeight] = useState(0)
 
   useEffect(() => {
-    setHeight(leftSectionRef.current.clientHeight * 0.9)
+    setHeight(leftSectionRef.current.clientHeight)
   })
   return (
     <div
@@ -117,7 +117,6 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
               <div
                 className={css({
                   width: '50%',
-                  paddingTop: '0.5%',
                   height: leftSectionHeight,
                 })}
               >
@@ -146,6 +145,8 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                   </div>
                 ) : (
                   <LazereyeChart
+                    rangeLabelText={'2016 BLOCKS'}
+                    height={leftSectionHeight}
                     data={hashrateForEachOfTheLast2016BlocksWithRangeof2016.map(
                       (d) => ({ x: d.height, y: d.hashrate })
                     )}
@@ -156,8 +157,10 @@ const MiningDataSection: React.FC<MiningDataSectionProps> = ({
                       return `Block: ${blockString}`
                     }}
                     formatBody={(body: string) => {
-                      const hashrate= Number(String(body).replace(/,/g, ''))
-                      return `${(hashrate/ 1_000_000_000_000_000_000).toFixed(2)} eh/s`
+                      const hashrate = Number(String(body).replace(/,/g, ''))
+                      return `${(hashrate / 1_000_000_000_000_000_000).toFixed(
+                        2
+                      )} eh/s`
                     }}
                   />
                 )}

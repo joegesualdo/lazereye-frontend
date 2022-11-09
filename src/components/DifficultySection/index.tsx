@@ -56,7 +56,7 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
   const [leftSectionHeight, setHeight] = useState(0)
 
   useEffect(() => {
-    setHeight(leftSectionRef.current.clientHeight * 0.9)
+    setHeight(leftSectionRef.current.clientHeight)
   })
   const daysUntilRetarget = estimatedSecondsUntilRetarget
     ? (estimatedSecondsUntilRetarget / (60 * 60 * 24)).toFixed(0)
@@ -133,7 +133,6 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
               <div
                 className={css({
                   width: '50%',
-                  paddingTop: '0.5%',
                   height: leftSectionHeight,
                 })}
               >
@@ -161,6 +160,8 @@ const DifficultySection: React.FC<MarketDataCardProps> = ({
                   </div>
                 ) : (
                   <LazereyeChart
+                    rangeLabelText={'1 YEAR'}
+                    height={leftSectionHeight}
                     data={difficultyAtEachEpoch.map((d) => ({
                       x: d.height,
                       y: d.difficulty,

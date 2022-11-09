@@ -22,7 +22,9 @@ const appStyles = {
 }
 
 const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
+// const BITCOIND_REST_API_URL = 'http://bitcoin.haltoshi.com:3030'
 const BITCOIND_REST_API_CACHE_URL = 'http://127.0.0.1:3032'
+//const BITCOIND_REST_API_CACHE_URL = 'http://bitcoin.haltoshi.com:3032'
 
 const fetchBC = async () => {
   const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockcount`)
@@ -60,7 +62,7 @@ const fetchBlockStatsForCurrentHeightFromCache = async () => {
 // }
 
 const fetchPriceFromCache = async () => {
-  const data = await fetch('http://localhost:3032/api/v1/price')
+  const data = await fetch(`${BITCOIND_REST_API_CACHE_URL}/api/v1/price`)
   const priceResponse = await data.json()
   return priceResponse
 }
@@ -72,7 +74,9 @@ const fetch24HourPriceHistory = async () => {
   return priceHistory
 }
 const fetch24HourPriceHistoryFromCache = async () => {
-  const data = await fetch('http://localhost:3032/api/v1/24hourpricehistory')
+  const data = await fetch(
+    `${BITCOIND_REST_API_CACHE_URL}/api/v1/24hourpricehistory`
+  )
   const priceHistory = await data.json()
   return priceHistory
 }
@@ -493,10 +497,16 @@ function App(): React.ReactElement {
     const everyFiveSecondInterval = setInterval(async () => {
       // const newBlockCount = await fetchBC()
       const newBlockCountFromCache = await fetchBlockcountFromCache()
-      if (newBlockCountFromCache !== blockCount) {
-        // Some of the long running caches updates won't be finished by this time. So those will be reflected until the next block, when this runs again.
+      const blockChainInfoFromCache = await fetchBlockchainInfoFromCache()
+      if (newBlockCountFromCache > blockCount) {
+        console.log(`BEHIND: ${newBlockCountFromCache} -- ${blockCount}`)
         fetchData().catch(console.error)
+        //if (newBlockCountFromCache > blockChainInfoFromCache.blocks) {
+        //  fetchData().catch(console.error)
+        //}
+        // Some of the long running caches updates won't be finished by this time. So those will be reflected until the next block, when this runs again.
       } else {
+        console.log(`NOT BEHIND: ${newBlockCountFromCache} -- ${blockCount}`)
       }
     }, 5000)
     const everySixtySecondInterval = setInterval(async () => {
