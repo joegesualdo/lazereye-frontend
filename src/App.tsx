@@ -21,10 +21,10 @@ const appStyles = {
   paddingRight: 20,
 }
 
-const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
-// const BITCOIND_REST_API_URL = 'http://bitcoin.haltoshi.com:3030'
-const BITCOIND_REST_API_CACHE_URL = 'http://127.0.0.1:3032'
-//const BITCOIND_REST_API_CACHE_URL = 'http://bitcoin.haltoshi.com:3032'
+//const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
+const BITCOIND_REST_API_URL = 'https://bitcoin.haltoshi.com:3030'
+//const BITCOIND_REST_API_CACHE_URL = 'http://127.0.0.1:3032'
+const BITCOIND_REST_API_CACHE_URL = 'https://bitcoin.haltoshi.com:3032'
 
 const fetchBC = async () => {
   const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockcount`)

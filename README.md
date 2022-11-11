@@ -17,3 +17,9 @@ To run ladle componenent library:
 ```
 $ pnpm ladle serve
 ```
+
+To Deploy
+
+```
+vercel --prod
+```

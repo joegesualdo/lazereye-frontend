@@ -326,11 +326,10 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
               paddingRight: 10,
               backgroundColor: '#2C2D30',
               //lineHeight: '20px',
-              height: '100%',
+              // height: '100%',
               fontSize: heightOfFont,
               color: '#ABABAC',
               lineHeight: `${heightOfLabel}px`,
-              fontWeight: 900,
               textTransform: 'uppercase',
               fontWeight: 'bold',
               //fontFamily: "'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'",
@@ -346,7 +345,6 @@ const LazereyeChart: React.FC<LazereyeChart> = ({
       </div>
       <div className={css({ height: height - heightOfLabel })}>
         <Line
-          width="100% !important"
           //height={height -100}
           width="auto !important"
           ref={chartRef}
