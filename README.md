@@ -14,14 +14,14 @@ $ pnpm run dev
 $ vite --host
 ```
 
-To run ladle componenent library:
-
-```
-$ pnpm ladle serve
-```
-
 To Deploy
 
 ```
 vercel --prod
+```
+
+To run ladle componenent library:
+
+```
+$ pnpm ladle serve
 ```
