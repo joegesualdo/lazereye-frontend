@@ -525,8 +525,9 @@ function App(): React.ReactElement {
     // WEBSOCKET
     console.log('SETTING UP WS')
     // const url = '127.0.0.1:3032'
-    const uri =
-      'wss://' + BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT + '/blockcount'
+    const uri = IS_PROD
+      ? 'wss://' + BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT + '/blockcount'
+      : 'ws://' + BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT + '/blockcount'
     const ws = new WebSocket(uri)
     console.log(ws)
     ws.onopen = function () {
