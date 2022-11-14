@@ -79,7 +79,7 @@ const MarketDataCard: React.FC<MarketDataCardProps> = ({
                         }}
                       >
                         <CardSectionTitle
-                          title="Price!"
+                          title="Price"
                           screenWidth={screenWidth}
                         />
                         {!priceInCents ? (
