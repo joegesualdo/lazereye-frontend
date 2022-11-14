@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "IS_PROD=false vite",
     "build": "vite build",
     "build-with-typechecking": "tsc && vite build",
-    "preview": "vite preview",
+    "preview": "IS_PROD=false vite preview",
     "docz:dev": "docz dev",
     "docz:build": "docz build",
     "docz:serve": "docz build && docz serve"

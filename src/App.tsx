@@ -21,10 +21,18 @@ const appStyles = {
   paddingRight: 20,
 }
 
+console.log(`SOME_VALUE: ${process.env.SOME_VALUE}`)
+console.log(`PROD: ${import.meta.env.PROD}`)
+const IS_PROD = Boolean(import.meta.env.PROD) && Boolean(process.env.IS_PROD)
+//console.log(`SOME_VALUE: ${import.meta.env.SOME_VALUE}`)
 //const BITCOIND_REST_API_URL = 'http://127.0.0.1:3030'
-const BITCOIND_REST_API_URL = 'https://bitcoin.haltoshi.com:3030'
+const BITCOIND_REST_API_URL = IS_PROD
+  ? 'https://bitcoin.haltoshi.com:3030'
+  : 'http://127.0.0.1:3030'
 //const BITCOIND_REST_API_CACHE_URL = 'http://127.0.0.1:3032'
-const BITCOIND_REST_API_CACHE_URL = 'https://bitcoin.haltoshi.com:3032'
+const BITCOIND_REST_API_CACHE_URL = IS_PROD
+  ? 'https://bitcoin.haltoshi.com:3032'
+  : 'http://127.0.0.1:3032'
 
 const fetchBC = async () => {
   const data = await fetch(`${BITCOIND_REST_API_URL}/api/v1/getblockcount`)
