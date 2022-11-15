@@ -681,15 +681,6 @@ function App(): React.ReactElement {
       blocksUntilRetarget={(() => {
         return blockCount ? Math.floor(blocksUntilRetarget) : undefined
       })()}
-      // averageSecondsPerBlockForCurrentEpoch={(() => {
-      //   const blocks_since_last_retarget =
-      //     BLOCKS_PER_DIFFICULTY_PERIOD - blocksUntilRetarget
-
-      //   const duration_since_last_difficulty_adjustment =
-      //     timeOfLastBlock - timeOfLastDifficultyAdjustmentBlock
-      //   const average_seconds_per_block_for_current_epoch =
-      //     duration_since_last_difficulty_adjustment / blocks_since_last_retarget
-      // })()}
       estimatedSecondsUntilRetarget={estimatedSecondsUntilRetarget}
       estimatedHashRateForLast2016Blocks={networkHashPsForLast2016Blocks}
       difficultyAtEachEpoch={difficultyAtEachEpochInTheLastYear}
