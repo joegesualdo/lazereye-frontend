@@ -1,5 +1,7 @@
 # Lazereye Frontend
 
+> Frontend for lazereye
+
 To run server
 
 > Run locally
