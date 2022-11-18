@@ -1,36 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
 import Dashboard from './components/Dashboard'
-import get24HourPrices from './get24HourPrices'
 
-async function allSynchronously<T>(
-  resolvables: (() => Promise<T>)[]
-): Promise<T[]> {
-  const results = []
-  for (const resolvable of resolvables) {
-    results.push(await resolvable())
-  }
-  return results
-}
 const BLOCKS_PER_DIFFICULTY_PERIOD = 2016
 
-const appStyles = {
-  backgroundColor: 'rgb(20 26 47/1)',
-  height: '100%',
-  paddingLeft: 20,
-  paddingRight: 20,
-}
-
-console.log(`SOME_VALUE: ${process.env.SOME_VALUE}`)
-console.log(`PROD: ${import.meta.env.PROD}`)
 const IS_PROD = Boolean(import.meta.env.PROD) || Boolean(process.env.IS_PROD)
+
 const BITCOIND_REST_API_URL = IS_PROD
   ? 'https://bitcoin.haltoshi.com:3030'
   : 'http://127.0.0.1:3030'
+
 const BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT = IS_PROD
   ? 'api.lazereye.io:443'
   : '127.0.0.1:3032'
+
 const BITCOIND_REST_API_CACHE_URL = IS_PROD
   ? `https://${BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT}`
   : `http://${BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT}`
