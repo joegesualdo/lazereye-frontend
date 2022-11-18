@@ -24,12 +24,12 @@ const appStyles = {
 
 console.log(`SOME_VALUE: ${process.env.SOME_VALUE}`)
 console.log(`PROD: ${import.meta.env.PROD}`)
-const IS_PROD = Boolean(import.meta.env.PROD) && Boolean(process.env.IS_PROD)
+const IS_PROD = Boolean(import.meta.env.PROD) || Boolean(process.env.IS_PROD)
 const BITCOIND_REST_API_URL = IS_PROD
   ? 'https://bitcoin.haltoshi.com:3030'
   : 'http://127.0.0.1:3030'
 const BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT = IS_PROD
-  ? 'bitcoin.haltoshi.com:3032'
+  ? 'api.lazereye.io:443'
   : '127.0.0.1:3032'
 const BITCOIND_REST_API_CACHE_URL = IS_PROD
   ? `https://${BITCOIND_REST_API_CACHE_URL_HOST_AND_PORT}`
