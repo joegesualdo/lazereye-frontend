@@ -158,7 +158,6 @@ const fetchBlockForBlockHash = async (blockhash: string) => {
 
 const fetchHashrateForLast2016Blocks = async (currentHeight: number) => {
   // approximately 1 year
-  //const results = Array(360)
   const results = Array(100)
     .fill(0)
     .map((_, i) => i)
