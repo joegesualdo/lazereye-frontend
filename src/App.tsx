@@ -23,6 +23,7 @@ const fetchBC = async () => {
   const blockcount = await data.json()
   return blockcount
 }
+
 const fetchBlockStatsForHeightOfLastDifficultyAdjustmentsFromCache =
   async () => {
     const data = await fetch(
