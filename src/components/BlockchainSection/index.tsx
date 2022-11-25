@@ -1,13 +1,9 @@
 import React from 'react'
-import { css, cx } from '@emotion/css'
 import SectionHeader from '../SectionHeader'
-import Logo from '../Logo'
 import CardSection from '../CardSection'
 import CardSectionTitle from '../CardSectionTitle'
 import CardSectionValue from '../CardSectionValue'
 import Card from '../Card'
-import LazereyeChart from '../LazereyeChart'
-import PercentChangeRow from '../PercentChangeRow'
 import CardSectionLoading from '../CardSectionLoading'
 
 const getSecondsSinceUnixTimestamp = (unixTimestamp, currentTime) => {
@@ -21,11 +17,10 @@ const getSecondsSinceUnixTimestamp = (unixTimestamp, currentTime) => {
   return utcSecondsSinceEpoch
 }
 
-const getFormattedStringForSeconds = (seconds) => {
-  var date = new Date(null)
+const getFormattedStringForSeconds = (seconds: number): String => {
+  const date = new Date()
   date.setSeconds(seconds) // specify value for SECONDS here
-  var result = date.toISOString().substr(14, 5)
-  return result
+  return date.toISOString().substr(14, 5)
 }
 
 interface BlockchainSectionProps {
