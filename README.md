@@ -1,6 +1,6 @@
 # Lazereye Frontend
 
-> Frontend for lazereye
+Frontend for lazereye
 
 To run server
 
